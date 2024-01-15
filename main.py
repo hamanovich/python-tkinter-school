@@ -3,11 +3,9 @@ import webbrowser
 import sys
 import os
 
-from PIL import Image as PilImage, ImageTk
-
-
 from tkinter import *
 from tkinter import font, messagebox
+from PIL import Image as PilImage, ImageTk
 
 from draggable import DraggableWidget
 
@@ -32,8 +30,8 @@ y_position = (screen_height - window_height) // 2
 window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
 window.resizable(0, 0)
 window.title(TITLE)
-window.rowconfigure(0, minsize=900, weight=1)
-window.columnconfigure(1, minsize=600, weight=1)
+window.rowconfigure(0, minsize=1000, weight=1)
+window.columnconfigure(1, minsize=800, weight=1)
 
 
 def clear_frame_content(frame):
@@ -57,7 +55,7 @@ def choose_topic(topic):
     frm_landing.grid_remove()
     clear_frame_content(frm_task_2_1)
     clear_frame_content(frm_task_2_2)
-    clear_frame_content(frm_cytology)
+    clear_frame_content(frm_task_3_1)
 
     if topic == "Ботаника":
         # task_2_1()
@@ -69,7 +67,7 @@ def choose_topic(topic):
         task_2_3()
 
     if topic == "Цитология":
-        cytology_tasks()
+        task_3_1()
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -111,7 +109,7 @@ def go_home():
     clear_frame_content(frm_task_2_1)
     clear_frame_content(frm_task_2_2)
     clear_frame_content(frm_task_2_3)
-    clear_frame_content(frm_cytology)
+    clear_frame_content(frm_task_3_1)
     clear_frame_content(btn_home)
     lbl_main.config(text=TITLE)
     btn_home = None
@@ -198,8 +196,8 @@ frm_task_2_2.grid(row=0, column=0)
 frm_task_2_3 = Frame(frm_content, bg=frm_main.cget("bg"))
 frm_task_2_3.grid(row=0, column=0)
 
-frm_cytology = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_cytology.grid(row=0, column=0)
+frm_task_3_1 = Frame(frm_content, bg=frm_main.cget("bg"))
+frm_task_3_1.grid(row=0, column=0)
 
 
 # ============
@@ -425,12 +423,14 @@ def task_2_3():
     link_label.bind(
         "<Button-1>", lambda _: webbrowser.open(data.data["Анатомия"]["tasks"][2]["meta"]["youtube"]))
 
-
 # ======
 # ЦИТОЛОГИЯ
-def cytology_tasks():
-    frm_cytology.grid()
-    lbl_intro = Label(frm_cytology,
+
+
+def task_3_1():
+    global photo1, photo2
+    frm_task_3_1.grid()
+    lbl_intro = Label(frm_task_3_1,
                       anchor=W,
                       wraplength=500,
                       bg=frm_main.cget("bg"),
@@ -438,9 +438,19 @@ def cytology_tasks():
                       pady=30,
                       text=data.data["Цитология"]["intro"])
     lbl_intro.grid(row=0, column=0)
-    lbl_task = Label(frm_cytology, anchor=W,
-                     text="Проект в процессе наполнения данными ⏰", font=font.Font(size=20))
-    lbl_task.grid(row=3, column=0)
+
+    canvas = Canvas(frm_task_3_1, width=650, height=650,
+                    bg="lightgreen", highlightthickness=1)
+    canvas.grid(row=1, column=0)
+
+    img1 = PilImage.open("images/botanika/botanika_3_3x650.png")
+    photo1 = ImageTk.PhotoImage(img1)
+
+    img2 = PilImage.open("images/cytology/ядро.png")
+    photo2 = ImageTk.PhotoImage(img2)
+
+    canvas.create_image(0, 0, anchor=NW, image=photo1)
+    canvas.create_image(0, 0, anchor=NW, image=photo2)
 
 
 # =====
