@@ -40,35 +40,43 @@ def clear_frame_content(frame):
         widget.destroy()
 
 
-def choose_topic(topic):
+def choose_topic(slug, name):
     global btn_home
     for btn in menu_btns:
         btn.config(highlightbackground="lightgreen", fg="black")
-    btn_index = [index for index, (label, _) in enumerate(
-        data.menu_buttons) if label == topic]
+    btn_index = [index for index, (slug_name, _, _) in enumerate(
+        data.menu_buttons) if slug_name == slug]
 
     btn = menu_btns[btn_index[0]]
     btn.config(highlightbackground="green", fg="green")
 
-    lbl_main.config(text=topic)
+    lbl_main.config(text=name)
 
     frm_landing.grid_remove()
+    clear_frame_content(frm_task_1_1)
+    clear_frame_content(frm_task_1_2)
+    clear_frame_content(frm_task_1_3)
     clear_frame_content(frm_task_2_1)
     clear_frame_content(frm_task_2_2)
+    clear_frame_content(frm_task_2_3)
     clear_frame_content(frm_task_3_1)
+    clear_frame_content(frm_task_3_2)
+    clear_frame_content(frm_task_3_3)
 
-    if topic == "Ботаника":
+    if slug == "botanika":
         task_1_1()
         # task_1_2()
         # task_1_3()
 
-    if topic == "Анатомия":
+    if slug == "anatomy":
         task_2_1()
         # task_2_2()
         # task_2_3()
 
-    if topic == "Цитология":
+    if slug == "cytology":
         task_3_1()
+        # task_3_2()
+        # task_3_3()
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -80,20 +88,13 @@ def choose_topic(topic):
         btn_home.grid(row=5, column=0, pady=5, sticky=EW)
 
 
-def task_2_1_btn_click(index):
-    current_text = entry_answer.get()
-    updated_text = f"{current_text} {index}"
-    entry_answer.config(bg="white", fg="black")
-    entry_answer.delete(0, END)
-    entry_answer.insert(0, updated_text)
-
-
 def check_only_digit(var):
     value = var.get()
     if len(value) > 1:
         var.set(value[:1])
     elif not value.isdigit() and value != "":
         var.set("")
+
 
 def check_only_letter(var):
     value = var.get()
@@ -112,10 +113,15 @@ score = 0
 def go_home():
     global btn_home
     frm_landing.grid()
+    clear_frame_content(frm_task_1_1)
+    clear_frame_content(frm_task_1_2)
+    clear_frame_content(frm_task_1_3)
     clear_frame_content(frm_task_2_1)
     clear_frame_content(frm_task_2_2)
     clear_frame_content(frm_task_2_3)
     clear_frame_content(frm_task_3_1)
+    clear_frame_content(frm_task_3_2)
+    clear_frame_content(frm_task_3_3)
     clear_frame_content(btn_home)
     lbl_main.config(text=TITLE)
     btn_home = None
@@ -139,14 +145,16 @@ def left_panel_ui():
 
     frm_menu_buttons = Frame(frm_panel, bg="lightgreen")
     frm_menu_buttons.grid(row=1, column=0, padx=10, sticky=NSEW)
+
     menu_btns = []
-    for idx, (menu_name_item, _) in enumerate(data.menu_buttons):
+
+    for idx, (slug, name, _) in enumerate(data.menu_buttons):
         btn_menu = Button(frm_menu_buttons,
-                          text=menu_name_item,
+                          text=name,
                           cursor="hand2",
                           highlightbackground=frm_panel.cget("bg"),
                           font=font.Font(size=18),
-                          command=lambda topic=menu_name_item: choose_topic(topic))
+                          command=lambda slug=slug, name=name: choose_topic(slug, name))
         btn_menu.grid(row=idx, column=0, pady=5, sticky=EW)
         menu_btns.append(btn_menu)
 
@@ -193,6 +201,9 @@ frm_task_1_1.grid(row=0, column=0)
 frm_task_1_2 = Frame(frm_content, bg=frm_main.cget("bg"))
 frm_task_1_2.grid(row=0, column=0)
 
+frm_task_1_3 = Frame(frm_content, bg=frm_main.cget("bg"))
+frm_task_1_3.grid(row=0, column=0)
+
 frm_task_2_1 = Frame(frm_content, bg=frm_main.cget("bg"))
 frm_task_2_1.grid(row=0, column=0)
 
@@ -204,6 +215,12 @@ frm_task_2_3.grid(row=0, column=0)
 
 frm_task_3_1 = Frame(frm_content, bg=frm_main.cget("bg"))
 frm_task_3_1.grid(row=0, column=0)
+
+frm_task_3_2 = Frame(frm_content, bg=frm_main.cget("bg"))
+frm_task_3_2.grid(row=0, column=0)
+
+frm_task_3_3 = Frame(frm_content, bg=frm_main.cget("bg"))
+frm_task_3_3.grid(row=0, column=0)
 
 
 # ============
@@ -218,7 +235,7 @@ def landing(frame):
                         pady=10)
     lbl_landing.grid(row=0, column=0, columnspan=4)
 
-    for idx, (frm_name, frm_img) in enumerate(data.menu_buttons):
+    for idx, (slug, name, frm_img) in enumerate(data.menu_buttons):
         frm = Frame(frame, borderwidth=2, relief=GROOVE, cursor="hand2")
         frm.grid(row=1, column=idx, padx=10, pady=10)
         image = PhotoImage(file=resource_path(frm_img))
@@ -226,17 +243,17 @@ def landing(frame):
         lbl_image.image = image
         lbl_image.grid(row=0, column=0)
         lbl_image.bind("<Button-1>", lambda _,
-                       topic=frm_name: choose_topic(topic))
-        lbl_text = Label(frm, text=frm_name)
+                       slug=slug, name=name: choose_topic(slug, name))
+        lbl_text = Label(frm, text=name)
         lbl_text.grid(row=1, column=0)
         lbl_text.bind("<Button-1>", lambda _,
-                      topic=frm_name: choose_topic(topic))
+                      slug=slug, name=name: choose_topic(slug, name))
 
 
 # =============
 # TASKS CONTENT
 
-# БОТАНИКА
+# BOTANIKA
 def task_1_1():
     frm_task_1_1.grid()
 
@@ -245,13 +262,13 @@ def task_1_1():
                      fg="black",
                      pady=5,
                      font=font.Font(size=20),
-                     text=data.data["Ботаника"]["tasks"][0]["name"])
+                     text=data.data["botanika"]["tasks"][0]["name"])
     lbl_task.grid(row=0, column=0)
 
     frm_options = Frame(frm_task_1_1, bg=frm_main.cget("bg"))
     frm_options.grid(row=1, column=0)
 
-    for i, option in enumerate(data.data["Ботаника"]["tasks"][0]["options"]):
+    for i, option in enumerate(data.data["botanika"]["tasks"][0]["options"]):
         lbl_option = Label(frm_options, anchor=W, wraplength=750,
                            bg=frm_main.cget("bg"),
                            fg="black",
@@ -276,7 +293,7 @@ def task_1_1():
             result = ""
             for i, variant in enumerate(row_entries):
                 result += variant.get()
-                if (variant.get() != data.data["Ботаника"]["tasks"][0]["answer"][i]):
+                if (variant.get() != data.data["botanika"]["tasks"][0]["answer"][i]):
                     variant.config(bg="red", fg="white")
                 else:
                     variant.config(bg="green", fg="white")
@@ -294,13 +311,13 @@ def task_1_2():
                      fg="black",
                      pady=5,
                      font=font.Font(size=16),
-                     text=data.data["Ботаника"]["tasks"][1]["name"])
+                     text=data.data["botanika"]["tasks"][1]["name"])
     lbl_task.grid(row=0, column=0)
 
     frm_crossword_questions = Frame(frm_task_1_2, bg=frm_main.cget("bg"))
     frm_crossword_questions.grid(row=1, column=0)
 
-    for i, option in enumerate(data.data["Ботаника"]["tasks"][1]["options"]):
+    for i, option in enumerate(data.data["botanika"]["tasks"][1]["options"]):
         lbl_crossword_question = Label(frm_crossword_questions, anchor=W, wraplength=750,
                                        bg=frm_main.cget("bg"),
                                        fg="black",
@@ -320,7 +337,7 @@ def task_1_2():
             result = ""
             for k, entry in enumerate(crossword_answer):
                 result += entry.get()
-                if (entry.get() != data.data["Ботаника"]["tasks"][1]["options"][i]["answer"][k]):
+                if (entry.get() != data.data["botanika"]["tasks"][1]["options"][i]["answer"][k]):
                     entry.config(bg="red", fg="white")
                     valid = False
                 else:
@@ -330,7 +347,7 @@ def task_1_2():
         for char in crossword_keyword:
             keyword += char.get()
 
-        if (keyword == data.data["Ботаника"]["tasks"][1]["answer"] and valid):
+        if (keyword == data.data["botanika"]["tasks"][1]["answer"] and valid):
             messagebox.showinfo("Кроссворд разгадан",
                                 "Поздравляю, вы разгадали кроссворд верно!")
 
@@ -341,7 +358,7 @@ def task_1_2():
                 entry.delete(0, END)
 
     # Draw grid
-    for row, option in enumerate(data.data["Ботаника"]["tasks"][1]["options"]):
+    for row, option in enumerate(data.data["botanika"]["tasks"][1]["options"]):
         for i in range(0, option["padLeft"]):
             label = Label(frm_crossword, width=2, bg=frm_panel.cget("bg"))
             label.grid(row=row+3, column=i)
@@ -374,24 +391,46 @@ def task_1_2():
     reset_crossword_button.grid(row=21, column=0, pady=10, sticky=EW)
 
 
+def task_1_3():
+    frm_task_1_3.grid()
+
+    lbl_task = Label(frm_task_1_3, anchor=W, wraplength=600,
+                     bg=frm_main.cget("bg"),
+                     fg="black",
+                     pady=5,
+                     font=font.Font(size=16),
+                     text=data.data["botanika"]["tasks"][2]["name"])
+    lbl_task.grid(row=0, column=0)
+
+
 # ======
-# АНАТОМИЯ
+# ANATOMY
+
+
 def task_2_1():
     global entry_answer
     frm_task_2_1.grid()
+    
 
     lbl_task = Label(frm_task_2_1, anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
                      fg="black",
                      pady=5,
-                     text=data.data["Анатомия"]["tasks"][0]["name"])
+                     text=data.data["anatomy"]["tasks"][0]["name"])
     lbl_task.grid(row=0, column=0)
 
     entry_answer = Entry(frm_task_2_1, bg="white",
                          fg="black", font=font.Font(size=20))
     entry_answer.grid(row=1, column=0, pady=10, sticky=EW)
 
-    for (idx, option) in data.data["Анатомия"]["tasks"][0]["options"]:
+    def task_2_1_btn_click(index):
+        current_text = entry_answer.get()
+        updated_text = f"{current_text} {index}"
+        entry_answer.config(bg="white", fg="black")
+        entry_answer.delete(0, END)
+        entry_answer.insert(0, updated_text)
+
+    for (idx, option) in data.data["anatomy"]["tasks"][0]["options"]:
         row_frame = Frame(frm_task_2_1, bg="white")
         row_frame.grid(row=idx+1, column=0, sticky=EW)
         row_frame.columnconfigure(1, weight=1)
@@ -415,7 +454,7 @@ def task_2_1():
         result = entry_answer.get()
         formatted_result = ''.join(result.split())
 
-        if formatted_result == data.data["Ботаника"]["tasks"][0]["answer"]:
+        if formatted_result == data.data["botanika"]["tasks"][0]["answer"]:
             entry_answer.config(bg="green", fg="white")
         else:
             entry_answer.config(bg="red", fg="white")
@@ -434,7 +473,7 @@ def task_2_2():
                      fg="black",
                      pady=5,
                      font=font.Font(size=16),
-                     text=data.data["Анатомия"]["tasks"][1]["name"])
+                     text=data.data["anatomy"]["tasks"][1]["name"])
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
     tk_image = PhotoImage(file=resource_path("images/eye_350.png"))
@@ -445,7 +484,7 @@ def task_2_2():
     def check_position(name, x, y):
         diff = 25
         match_option = [option for (
-            n, option) in data.data["Анатомия"]["tasks"][1]["options"] if n == name][0]
+            n, option) in data.data["anatomy"]["tasks"][1]["options"] if n == name][0]
         match_btn = [
             btn for btn in draggable_labels if btn.cget("text") == name][0]
 
@@ -455,7 +494,7 @@ def task_2_2():
             match_btn.config(highlightbackground="red", fg="red")
 
     draggable_labels = []
-    for idx, (name, _) in enumerate(data.data["Анатомия"]["tasks"][1]["options"]):
+    for idx, (name, _) in enumerate(data.data["anatomy"]["tasks"][1]["options"]):
         draggable_label = DraggableWidget(
             frm_task_2_2, cursor="hand2", relief=RAISED, bd=1, bg="#666", fg="white", text=name, on_release_callback=check_position)
         draggable_label.place(x=5, y=50 + idx * 25)
@@ -469,7 +508,7 @@ def task_2_2():
         frm_task_2_2, text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
     link_label.grid(row=3, column=0, pady=10)
     link_label.bind(
-        "<Button-1>", lambda _: webbrowser.open(data.data["Анатомия"]["tasks"][1]["meta"]["youtube"]))
+        "<Button-1>", lambda _: webbrowser.open(data.data["anatomy"]["tasks"][1]["meta"]["youtube"]))
 
 
 def task_2_3():
@@ -481,17 +520,18 @@ def task_2_3():
                      fg="black",
                      pady=5,
                      font=font.Font(size=16),
-                     text=data.data["Анатомия"]["tasks"][2]["name"])
+                     text=data.data["anatomy"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
     link_label = Label(
         frm_task_2_3, text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
     link_label.grid(row=3, column=0, pady=10)
     link_label.bind(
-        "<Button-1>", lambda _: webbrowser.open(data.data["Анатомия"]["tasks"][2]["meta"]["youtube"]))
+        "<Button-1>", lambda _: webbrowser.open(data.data["anatomy"]["tasks"][2]["meta"]["youtube"]))
+
 
 # ======
-# ЦИТОЛОГИЯ
+# CYTOLOGY
 
 
 def task_3_1():
@@ -503,14 +543,14 @@ def task_3_1():
                       bg=frm_main.cget("bg"),
                       fg="black",
                       pady=30,
-                      text=data.data["Цитология"]["intro"])
+                      text=data.data["cytology"]["intro"])
     lbl_intro.grid(row=0, column=0)
 
     canvas = Canvas(frm_task_3_1, width=650, height=650,
                     bg="lightgreen", highlightthickness=1)
     canvas.grid(row=1, column=0)
 
-    img1 = PilImage.open("images/botanika/botanika_3_3x650.png")
+    img1 = PilImage.open("images/botanika/botanika_3_3-00.png")
     photo1 = ImageTk.PhotoImage(img1)
 
     img2 = PilImage.open("images/cytology/ядро.png")
@@ -518,6 +558,32 @@ def task_3_1():
 
     canvas.create_image(0, 0, anchor=NW, image=photo1)
     canvas.create_image(0, 0, anchor=NW, image=photo2)
+
+
+def task_3_2():
+    frm_task_3_2.grid()
+    lbl_task = Label(frm_task_3_2,
+                     anchor=W,
+                     wraplength=500,
+                     bg=frm_main.cget("bg"),
+                     fg="black",
+                     pady=5,
+                     font=font.Font(size=16),
+                     text=data.data["cytology"]["tasks"][1]["name"])
+    lbl_task.grid(row=0, column=0, pady=(0, 15))
+
+
+def task_3_3():
+    frm_task_3_3.grid()
+    lbl_task = Label(frm_task_3_3,
+                     anchor=W,
+                     wraplength=500,
+                     bg=frm_main.cget("bg"),
+                     fg="black",
+                     pady=5,
+                     font=font.Font(size=16),
+                     text=data.data["cytology"]["tasks"][1]["name"])
+    lbl_task.grid(row=0, column=0, pady=(0, 15))
 
 
 # =====
