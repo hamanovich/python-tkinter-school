@@ -58,13 +58,14 @@ def choose_topic(topic):
     clear_frame_content(frm_task_3_1)
 
     if topic == "Ботаника":
-        # task_2_1()
-        task_1_2()
+        task_1_1()
+        # task_1_2()
+        # task_1_3()
 
     if topic == "Анатомия":
-        # task_2_1()
+        task_2_1()
         # task_2_2()
-        task_2_3()
+        # task_2_3()
 
     if topic == "Цитология":
         task_3_1()
@@ -87,14 +88,19 @@ def task_2_1_btn_click(index):
     entry_answer.insert(0, updated_text)
 
 
-def check_result():
-    result = entry_answer.get()
-    formatted_result = ''.join(result.split())
+def check_only_digit(var):
+    value = var.get()
+    if len(value) > 1:
+        var.set(value[:1])
+    elif not value.isdigit() and value != "":
+        var.set("")
 
-    if formatted_result == data.data["Ботаника"]["tasks"][0]["answer"]:
-        entry_answer.config(bg="green", fg="white")
-    else:
-        entry_answer.config(bg="red", fg="white")
+def check_only_letter(var):
+    value = var.get()
+    if len(value) > 1:
+        var.set(value[:1])
+    elif value.isdigit() and value != "":
+        var.set("")
 
 
 score = 0
@@ -173,7 +179,7 @@ frm_main.columnconfigure(0, weight=1)
 
 lbl_main = Label(frm_main, text=TITLE, bg="lightgreen", fg="black",
                  font=font.Font(size=38), anchor="center")
-lbl_main.grid(row=0, column=0, columnspan=3, pady=(0, 15), sticky=EW)
+lbl_main.grid(row=0, column=0, columnspan=3, pady=(20, 20), sticky=EW)
 
 frm_content = Frame(frm_main, padx=5, pady=5, bg=frm_main.cget("bg"))
 frm_content.grid(row=1, column=0)
@@ -231,6 +237,55 @@ def landing(frame):
 # TASKS CONTENT
 
 # БОТАНИКА
+def task_1_1():
+    frm_task_1_1.grid()
+
+    lbl_task = Label(frm_task_1_1, anchor=W, wraplength=600,
+                     bg=frm_main.cget("bg"),
+                     fg="black",
+                     pady=5,
+                     font=font.Font(size=20),
+                     text=data.data["Ботаника"]["tasks"][0]["name"])
+    lbl_task.grid(row=0, column=0)
+
+    frm_options = Frame(frm_task_1_1, bg=frm_main.cget("bg"))
+    frm_options.grid(row=1, column=0)
+
+    for i, option in enumerate(data.data["Ботаника"]["tasks"][0]["options"]):
+        lbl_option = Label(frm_options, anchor=W, wraplength=750,
+                           bg=frm_main.cget("bg"),
+                           fg="black",
+                           font=font.Font(size=16),
+                           text=f"{option[0]}. {option[1]}")
+        lbl_option.grid(row=i, column=0)
+
+    frm_task = Frame(frm_task_1_1, bg=frm_main.cget("bg"))
+    frm_task.grid(row=2, column=0, pady=20)
+
+    row_entries = []
+
+    for i in range(5):
+        var = StringVar()
+        var.trace_add("write", lambda *args, var=var: check_only_digit(var))
+        entry = Entry(frm_task, bg="white", fg="black", font=font.Font(size=48), width=2, highlightthickness=1,
+                      highlightbackground="white", bd=2, justify="center", relief="solid", textvariable=var)
+        entry.grid(row=3, column=i)
+        row_entries.append(entry)
+
+        def check_task():
+            result = ""
+            for i, variant in enumerate(row_entries):
+                result += variant.get()
+                if (variant.get() != data.data["Ботаника"]["tasks"][0]["answer"][i]):
+                    variant.config(bg="red", fg="white")
+                else:
+                    variant.config(bg="green", fg="white")
+
+    check_result_button = Button(
+        frm_task_1_1, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_task)
+    check_result_button.grid(row=4, column=0, pady=10, sticky=EW)
+
+
 def task_1_2():
     frm_task_1_2.grid()
 
@@ -298,8 +353,11 @@ def task_1_2():
         row_entries = []
 
         for i in range(option["padLeft"]+1, option["padLeft"]+1 + len(option["answer"])):
+            var = StringVar()
+            var.trace_add("write", lambda *args,
+                          var=var: check_only_letter(var))
             entry = Entry(frm_crossword, bg="yellow" if i == 8 else "white", fg="black",
-                          width=2, highlightthickness=1, highlightbackground="white", bd=1, justify="center", relief="solid")
+                          width=2, highlightthickness=1, highlightbackground="white", bd=1, justify="center", relief="solid", textvariable=var)
             entry.grid(row=row+2, column=i)
             row_entries.append(entry)
             if (i == 7):
@@ -352,6 +410,15 @@ def task_2_1():
                         font=font.Font(size=16),
                         command=lambda i=idx: task_2_1_btn_click(i))
         button.grid(row=0, column=1, padx=(5, 0), sticky=EW)
+
+    def check_result():
+        result = entry_answer.get()
+        formatted_result = ''.join(result.split())
+
+        if formatted_result == data.data["Ботаника"]["tasks"][0]["answer"]:
+            entry_answer.config(bg="green", fg="white")
+        else:
+            entry_answer.config(bg="red", fg="white")
 
     check_result_button = Button(
         frm_task_2_1, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
