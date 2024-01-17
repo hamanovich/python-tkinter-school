@@ -3,6 +3,7 @@ import webbrowser
 import sys
 import os
 
+from random import randint
 from tkinter import *
 from tkinter import font, messagebox
 from PIL import Image as PilImage, ImageTk
@@ -70,9 +71,9 @@ def choose_topic(slug, name):
         # task_1_3()
 
     if slug == "anatomy":
-        task_2_1()
+        # task_2_1()
         # task_2_2()
-        # task_2_3()
+        task_2_3()
 
     if slug == "cytology":
         # task_3_1()
@@ -277,7 +278,7 @@ def task_1_1():
         var = StringVar()
         var.trace_add("write", lambda *args, var=var: check_only_digit(var))
         entry = Entry(frm_task, bg="white", fg="black", font=font.Font(size=48), width=2, highlightthickness=1,
-                      highlightbackground="white", bd=2, justify="center", relief="solid", textvariable=var)
+                      highlightbackground="white", bd=2, justify="center", relief=SOLID, textvariable=var)
         entry.grid(row=3, column=i)
         row_entries.append(entry)
 
@@ -356,7 +357,7 @@ def task_1_2():
             label.grid(row=row+3, column=i)
 
         label = Label(frm_crossword, width=2, text=row+1, bg="white",
-                      fg="black", bd=1, highlightthickness=1, relief="solid")
+                      fg="black", bd=1, highlightthickness=1, relief=SOLID)
         label.grid(row=row+2, column=option["padLeft"])
 
         row_entries = []
@@ -366,7 +367,7 @@ def task_1_2():
             var.trace_add("write", lambda *args,
                           var=var: check_only_letter(var))
             entry = Entry(frm_crossword, bg="yellow" if i == 8 else "white", fg="black",
-                          width=2, highlightthickness=1, highlightbackground="white", bd=1, justify="center", relief="solid", textvariable=var)
+                          width=2, highlightthickness=1, highlightbackground="white", bd=1, justify="center", relief=SOLID, textvariable=var)
             entry.grid(row=row+2, column=i)
             row_entries.append(entry)
             if (i == 7):
@@ -472,6 +473,9 @@ def task_2_2():
     lbl_image.image = tk_image
     lbl_image.grid(row=1, column=0)
 
+    def check_result():
+        pass
+
     def check_position(name, x, y):
         diff = 25
         match_option = [option for (
@@ -491,9 +495,9 @@ def task_2_2():
         draggable_label.place(x=5, y=50 + idx * 25)
         draggable_labels.append(draggable_label)
 
-    # check_result_button = Button(
-    #     frm_task_2_2, text="Проверить результат", font=font.Font(size=20), command=check_result)
-    # check_result_button.grid(row=2, column=0, pady=10, sticky=EW)
+    check_result_button = Button(
+        frm_task_2_2, text="Проверить результат", font=font.Font(size=20), command=check_result)
+    check_result_button.grid(row=2, column=0, pady=10, sticky=EW)
 
     link_label = Label(
         frm_task_2_2, text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
@@ -504,6 +508,9 @@ def task_2_2():
 
 def task_2_3():
     frm_task_2_3.grid()
+
+    options = data.data["anatomy"]["tasks"][2]["options"]
+
     lbl_task = Label(frm_task_2_3,
                      anchor=W,
                      wraplength=500,
@@ -514,9 +521,70 @@ def task_2_3():
                      text=data.data["anatomy"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
+    container = Frame(frm_task_2_3, height=300)
+    container.grid(sticky=EW)
+    frm_task_2_3.grid_rowconfigure(0, weight=1)
+    frm_task_2_3.grid_columnconfigure(0, weight=1)
+    frm_task_2_3.update_idletasks()
+
+    frame1 = Frame(container, bg="white", bd=3, highlightthickness=5,
+                   highlightbackground="white", relief=SOLID, height=250)
+    frame2 = Frame(container, bg="white", bd=3, highlightthickness=5,
+                   highlightbackground="white", relief=SOLID, height=250)
+    frame3 = Frame(container, bg="white", bd=0, highlightthickness=0,
+                   highlightbackground="white", height=250)
+
+    frame1.grid(row=1, column=0, sticky=EW)
+    frame2.grid(row=1, column=1, sticky=EW)
+    frame3.grid(row=2, column=0, columnspan=2, sticky=EW)
+
+    Label(container, relief=SOLID, bd=1, bg="white",
+          fg="black", text="Микроэлементы").place(x=55, y=10)
+    Label(container, relief=SOLID, bd=1, bg="white",
+          fg="black", text="Макроэлементы").place(x=280, y=10)
+
+    container.grid_rowconfigure(1, weight=1)
+    container.grid_columnconfigure(0, weight=1)
+    container.grid_columnconfigure(1, weight=1)
+    container.grid_rowconfigure(2, weight=1)
+
+    all_elements = []
+    valid_elements = []
+    def check_position(name, x, y):
+        value = get_value(name, options)
+        match_lbl = [lbl for lbl in draggable_labels if lbl.cget("text") == name][0]
+        all_elements.append(match_lbl)
+
+        if ((x < 190 and y < 215 and value == "микроэлемент") or (x > 230 and y < 215 and value == "макроэлемент")):
+            valid_elements.append(match_lbl)
+        elif match_lbl in valid_elements:
+            valid_elements.remove(match_lbl) 
+
+    def check_result():
+        valid_element_names = [lbl.cget("text") for lbl in valid_elements]
+        for el in all_elements:
+            if (el.cget("text") in valid_element_names):
+                el.config(bg="green") 
+            else:
+                el.config(bg="red")
+
+        if (len(valid_elements) == len(options)):
+            increase_score()
+
+    draggable_labels = []
+    for (name, _) in options:
+        draggable_label = DraggableWidget(
+            container, cursor="hand2", relief=SOLID, font=font.Font(size=20), width=2, bd=1, bg="white", fg="black", text=name, on_release_callback=check_position)
+        draggable_label.place(x=randint(10, 400), y=randint(275, 400))
+        draggable_labels.append(draggable_label)
+
+    check_result_button = Button(
+        frm_task_2_3, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
+    check_result_button.grid(row=3, column=0, pady=(50, 0), sticky=EW)
+
     link_label = Label(
         frm_task_2_3, text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
-    link_label.grid(row=3, column=0, pady=10)
+    link_label.grid(row=4, column=0, pady=10)
     link_label.bind(
         "<Button-1>", lambda _: webbrowser.open(data.data["anatomy"]["tasks"][2]["meta"]["youtube"]))
 
@@ -574,7 +642,7 @@ def task_3_2():
                 correct_answers += 1
             else:
                 label.config(bg="red", fg="white")
-        if  correct_answers == len(options):
+        if correct_answers == len(options):
             increase_score()
 
     choice_values = list(set(value for _, value in options))

@@ -19,3 +19,9 @@ def find_coordinates(options, search_term):
         if option[0] == search_term:
             return option[1]["x"], option[1]["y"]
     return None, None
+
+
+def get_value(key, options):
+    for element, category in options:
+        if element == key:
+            return category
