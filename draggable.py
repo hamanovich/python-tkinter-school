@@ -12,6 +12,7 @@ class DraggableWidget(tk.Label):
         self.start_y = 0
 
     def on_press(self, event):
+        self.lift()
         self.start_x = event.x
         self.start_y = event.y
 

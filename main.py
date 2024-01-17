@@ -7,6 +7,7 @@ from tkinter import *
 from tkinter import font, messagebox
 from PIL import Image as PilImage, ImageTk
 
+from utils import *
 from draggable import DraggableWidget
 
 
@@ -74,9 +75,9 @@ def choose_topic(slug, name):
         # task_2_3()
 
     if slug == "cytology":
-        task_3_1()
+        # task_3_1()
         # task_3_2()
-        # task_3_3()
+        task_3_3()
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -88,23 +89,10 @@ def choose_topic(slug, name):
         btn_home.grid(row=5, column=0, pady=5, sticky=EW)
 
 
-def check_only_digit(var):
-    value = var.get()
-    if len(value) > 1:
-        var.set(value[:1])
-    elif not value.isdigit() and value != "":
-        var.set("")
-
-
-def check_only_letter(var):
-    value = var.get()
-    if len(value) > 1:
-        var.set(value[:1])
-    elif value.isdigit() and value != "":
-        var.set("")
-
-
-score = 0
+def increase_score():
+    global score
+    score += 1
+    lbl_score.config(text=f"{score}/9")
 
 # ==========
 # LEFT PANEL
@@ -135,6 +123,7 @@ def left_panel_ui():
     global btn_home
     global frm_panel
     global frm_menu_buttons
+    global lbl_score
     frm_panel = Frame(window, bg="lightgreen", relief=RAISED, bd=2)
     frm_panel.grid(row=0, column=0, sticky=NSEW)
     frm_panel.rowconfigure(2, weight=1)
@@ -221,6 +210,9 @@ frm_task_3_2.grid(row=0, column=0)
 
 frm_task_3_3 = Frame(frm_content, bg=frm_main.cget("bg"))
 frm_task_3_3.grid(row=0, column=0)
+
+
+score = 0
 
 
 # ============
@@ -410,7 +402,6 @@ def task_1_3():
 def task_2_1():
     global entry_answer
     frm_task_2_1.grid()
-    
 
     lbl_task = Label(frm_task_2_1, anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
@@ -535,29 +526,30 @@ def task_2_3():
 
 
 def task_3_1():
-    global photo1, photo2
+    global cytology_photo_3_1_1, cytology_photo_3_1_2
     frm_task_3_1.grid()
     lbl_intro = Label(frm_task_3_1,
                       anchor=W,
                       wraplength=500,
                       bg=frm_main.cget("bg"),
                       fg="black",
-                      pady=30,
-                      text=data.data["cytology"]["intro"])
+                      pady=5,
+                      font=font.Font(size=16),
+                      text=data.data["cytology"]["tasks"][0]["name"])
     lbl_intro.grid(row=0, column=0)
 
     canvas = Canvas(frm_task_3_1, width=650, height=650,
-                    bg="lightgreen", highlightthickness=1)
+                    bg="white", highlightthickness=1)
     canvas.grid(row=1, column=0)
 
-    img1 = PilImage.open("images/botanika/botanika_3_3-00.png")
-    photo1 = ImageTk.PhotoImage(img1)
+    img1 = PilImage.open("images/cytology/клетка.png")
+    cytology_photo_3_1_1 = ImageTk.PhotoImage(img1)
 
     img2 = PilImage.open("images/cytology/ядро.png")
-    photo2 = ImageTk.PhotoImage(img2)
+    cytology_photo_3_1_2 = ImageTk.PhotoImage(img2)
 
-    canvas.create_image(0, 0, anchor=NW, image=photo1)
-    canvas.create_image(0, 0, anchor=NW, image=photo2)
+    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_1_1)
+    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_1_2)
 
 
 def task_3_2():
@@ -574,6 +566,8 @@ def task_3_2():
 
 
 def task_3_3():
+    global cytology_photo_3_3_1, cytology_photo_3_3_2, cytology_photo_3_3_3, cytology_photo_3_3_4, cytology_photo_3_3_5, cytology_photo_3_3_6, cytology_photo_3_3_7
+
     frm_task_3_3.grid()
     lbl_task = Label(frm_task_3_3,
                      anchor=W,
@@ -582,11 +576,98 @@ def task_3_3():
                      fg="black",
                      pady=5,
                      font=font.Font(size=16),
-                     text=data.data["cytology"]["tasks"][1]["name"])
+                     text=data.data["cytology"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
+    frm_wrapper = Frame(frm_task_3_3, bg="white", height=508,
+                        width=700, bd=0)
+    frm_wrapper.grid(row=1, column=0)
+    frm_wrapper.grid_propagate(0)
 
-# =====
+    frm_tips = Frame(frm_wrapper,
+                     bg="white", highlightthickness=0, width=125, height=508)
+    frm_tips.grid(row=0, column=2, sticky=E)
+    frm_tips.grid_remove()
+
+    canvas = Canvas(frm_wrapper, width=414, height=508,
+                    bg="white", highlightthickness=0)
+    canvas.grid(row=0, column=0)
+    frm_wrapper.grid_columnconfigure(1, weight=1)
+    frm_wrapper.grid_columnconfigure(2, weight=1)
+
+    img1 = PilImage.open("images/cytology/cytology_3_3_00.jpg")
+    cytology_photo_3_3_1 = ImageTk.PhotoImage(img1)
+    img2 = PilImage.open("images/cytology/cytology_3_3_01.jpg")
+    cytology_photo_3_3_2 = ImageTk.PhotoImage(img2)
+    img3 = PilImage.open("images/cytology/cytology_3_3_02.jpg")
+    cytology_photo_3_3_3 = ImageTk.PhotoImage(img3)
+    img4 = PilImage.open("images/cytology/cytology_3_3_03.jpg")
+    cytology_photo_3_3_4 = ImageTk.PhotoImage(img4)
+    img5 = PilImage.open("images/cytology/cytology_3_3_04.jpg")
+    cytology_photo_3_3_5 = ImageTk.PhotoImage(img5)
+    img6 = PilImage.open("images/cytology/cytology_3_3_05.jpg")
+    cytology_photo_3_3_6 = ImageTk.PhotoImage(img6)
+    img7 = PilImage.open("images/cytology/cytology_3_3_06.jpg")
+    cytology_photo_3_3_7 = ImageTk.PhotoImage(img7)
+
+    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_3_1)
+
+    valid_puzzles = []
+
+    def check_position(name, x, y):
+        diff = 5
+        xx, yy = find_coordinates(
+            data.data["cytology"]["tasks"][2]["options"], name)
+
+        if (abs(xx - x) < diff and abs(yy - y) < diff):
+            if (name not in valid_puzzles):
+                valid_puzzles.append(name)
+        else:
+            if (name in valid_puzzles):
+                valid_puzzles.remove(name)
+
+    DraggableWidget(
+        frm_wrapper, cursor="hand2", bd=0, text="дерма", image=cytology_photo_3_3_2, on_release_callback=check_position).place(x=155, y=85)
+    Label(frm_tips, bg="white", fg="black", text="<-- дерма").place(x=0, y=450)
+
+    DraggableWidget(
+        frm_wrapper, cursor="hand2", bd=0, text="базальный", image=cytology_photo_3_3_3, on_release_callback=check_position).place(x=40, y=195)
+    Label(frm_tips, bg="white", fg="black", text="<-- базальный").place(x=0, y=375)
+
+    DraggableWidget(
+        frm_wrapper, cursor="hand2", bd=0, text="шиповатый", image=cytology_photo_3_3_4, on_release_callback=check_position).place(x=75, y=115)
+    Label(frm_tips, bg="white", fg="black", text="<-- шиповатый").place(x=0, y=300)
+
+    DraggableWidget(
+        frm_wrapper, cursor="hand2", bd=0, text="зернистый", image=cytology_photo_3_3_5, on_release_callback=check_position).place(x=140, y=205)
+    Label(frm_tips, bg="white", fg="black", text="<-- зернистый").place(x=0, y=210)
+
+    DraggableWidget(
+        frm_wrapper, cursor="hand2", bd=0, text="блестящий", image=cytology_photo_3_3_6, on_release_callback=check_position).place(x=30, y=70)
+    Label(frm_tips, bg="white", fg="black", text="<-- блестящий").place(x=0, y=120)
+
+    DraggableWidget(
+        frm_wrapper, cursor="hand2", bd=0, text="роговой", image=cytology_photo_3_3_7, on_release_callback=check_position).place(x=25, y=255)
+    Label(frm_tips, bg="white", fg="black", text="<-- роговой").place(x=0, y=35)
+
+    def check_result():
+        if (len(valid_puzzles) == len(data.data["cytology"]["tasks"][2]["options"])):
+            increase_score()
+
+    check_result_button = Button(
+        frm_task_3_3, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
+    check_result_button.grid(row=3, column=0, pady=50, sticky=EW)
+
+    def show_tips():
+        frm_tips.grid()
+        btn_tip.grid_remove()
+        frm_tips.after(5000, frm_tips.grid_remove)
+
+    btn_tip = Button(frm_task_3_3, text="Показать подсказку на 5 секунд", highlightbackground=frm_panel.cget(
+        "bg"), cursor="hand2",  command=show_tips)
+    btn_tip.grid()
+
+
 if __name__ == "__main__":
     left_panel_ui()
     landing(frm_landing)

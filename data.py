@@ -234,15 +234,15 @@ data = {
                 "name": "Собрать слои эпидермиса в правильной последовательности",
                 "options": [
                     ("дерма", {
-                     "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_01.jpg"}),
+                     "x": 0, "y": 415, "img_path": "images/cytology/cytology_3_3_01.jpg"}),
                     ("базальный", {
-                     "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_02.jpg"}),
+                     "x": 0, "y": 356, "img_path": "images/cytology/cytology_3_3_02.jpg"}),
                     ("шиповатый", {
-                     "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_03.jpg"}),
+                     "x": 0, "y": 285, "img_path": "images/cytology/cytology_3_3_03.jpg"}),
                     ("зернистый", {
-                     "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_04.jpg"}),
+                     "x": 0, "y": 164, "img_path": "images/cytology/cytology_3_3_04.jpg"}),
                     ("блестящий", {
-                     "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_05.jpg"}),
+                     "x": 0, "y": 94, "img_path": "images/cytology/cytology_3_3_05.jpg"}),
                     ("роговой", {
                      "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_06.jpg"}),
                 ]
