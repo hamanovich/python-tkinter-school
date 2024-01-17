@@ -76,8 +76,8 @@ def choose_topic(slug, name):
 
     if slug == "cytology":
         # task_3_1()
-        # task_3_2()
-        task_3_3()
+        task_3_2()
+        # task_3_3()
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -92,7 +92,7 @@ def choose_topic(slug, name):
 def increase_score():
     global score
     score += 1
-    lbl_score.config(text=f"{score}/9")
+    lbl_score.config(text=f"{score}/{total_tasks}")
 
 # ==========
 # LEFT PANEL
@@ -156,8 +156,7 @@ def left_panel_ui():
         "bg"), fg="black", font=font.Font(size=10))
     lbl_copyrights.grid(row=0, column=0)
 
-    # TODO: replace 9 to amount of tasks
-    lbl_score = Label(frm_panel, text=f"{score}/9", font=font.Font(size=30),
+    lbl_score = Label(frm_panel, text=f"{score}/{total_tasks}", font=font.Font(size=30),
                       bg="lightgreen", fg="black")
     lbl_score.grid(row=3, column=0, padx=5, pady=1)
 
@@ -212,6 +211,7 @@ frm_task_3_3 = Frame(frm_content, bg=frm_main.cget("bg"))
 frm_task_3_3.grid(row=0, column=0)
 
 
+total_tasks = sum(len(cat["tasks"]) for cat in data.data.values())
 score = 0
 
 
@@ -562,11 +562,51 @@ def task_3_2():
                      pady=5,
                      font=font.Font(size=16),
                      text=data.data["cytology"]["tasks"][1]["name"])
-    lbl_task.grid(row=0, column=0, pady=(0, 15))
+    lbl_task.grid(row=0, column=0, pady=(0, 15), columnspan=4)
+
+    options = data.data["cytology"]["tasks"][1]["options"]
+
+    def check_result():
+        correct_answers = 0
+        for _, correct, var, label in options:
+            if var.get() == correct:
+                label.config(bg="green", fg="white")
+                correct_answers += 1
+            else:
+                label.config(bg="red", fg="white")
+        if  correct_answers == len(options):
+            increase_score()
+
+    choice_values = list(set(value for _, value in options))
+
+    for i, (name, correct_answer) in enumerate(options):
+        var = StringVar(value="")
+        label = Label(frm_task_3_2, text=name, font=font.Font(size=16), bg=frm_main.cget("bg"),
+                      fg="black")
+        label.grid(row=i+1, column=0)
+
+        for j, choice in enumerate(choice_values):
+            rad_button = Radiobutton(frm_task_3_2, text=choice, variable=var, value=choice, bg=frm_main.cget("bg"),
+                                     fg="black")
+            rad_button.grid(row=i+1, column=j+1)
+
+        options[i] = (
+            name, correct_answer, var, label)
+
+    check_button = Button(frm_task_3_2, text="Проверить результат", font=font.Font(
+        size=20), cursor="hand2", command=check_result)
+    check_button.grid(row=i+2, column=0, pady=50, sticky=EW,
+                      columnspan=4)
 
 
 def task_3_3():
-    global cytology_photo_3_3_1, cytology_photo_3_3_2, cytology_photo_3_3_3, cytology_photo_3_3_4, cytology_photo_3_3_5, cytology_photo_3_3_6, cytology_photo_3_3_7
+    global cytology_photo_3_3_1
+    global cytology_photo_3_3_2
+    global cytology_photo_3_3_3
+    global cytology_photo_3_3_4
+    global cytology_photo_3_3_5
+    global cytology_photo_3_3_6
+    global cytology_photo_3_3_7
 
     frm_task_3_3.grid()
     lbl_task = Label(frm_task_3_3,
@@ -632,23 +672,28 @@ def task_3_3():
 
     DraggableWidget(
         frm_wrapper, cursor="hand2", bd=0, text="базальный", image=cytology_photo_3_3_3, on_release_callback=check_position).place(x=40, y=195)
-    Label(frm_tips, bg="white", fg="black", text="<-- базальный").place(x=0, y=375)
+    Label(frm_tips, bg="white", fg="black",
+          text="<-- базальный").place(x=0, y=375)
 
     DraggableWidget(
         frm_wrapper, cursor="hand2", bd=0, text="шиповатый", image=cytology_photo_3_3_4, on_release_callback=check_position).place(x=75, y=115)
-    Label(frm_tips, bg="white", fg="black", text="<-- шиповатый").place(x=0, y=300)
+    Label(frm_tips, bg="white", fg="black",
+          text="<-- шиповатый").place(x=0, y=300)
 
     DraggableWidget(
         frm_wrapper, cursor="hand2", bd=0, text="зернистый", image=cytology_photo_3_3_5, on_release_callback=check_position).place(x=140, y=205)
-    Label(frm_tips, bg="white", fg="black", text="<-- зернистый").place(x=0, y=210)
+    Label(frm_tips, bg="white", fg="black",
+          text="<-- зернистый").place(x=0, y=210)
 
     DraggableWidget(
         frm_wrapper, cursor="hand2", bd=0, text="блестящий", image=cytology_photo_3_3_6, on_release_callback=check_position).place(x=30, y=70)
-    Label(frm_tips, bg="white", fg="black", text="<-- блестящий").place(x=0, y=120)
+    Label(frm_tips, bg="white", fg="black",
+          text="<-- блестящий").place(x=0, y=120)
 
     DraggableWidget(
         frm_wrapper, cursor="hand2", bd=0, text="роговой", image=cytology_photo_3_3_7, on_release_callback=check_position).place(x=25, y=255)
-    Label(frm_tips, bg="white", fg="black", text="<-- роговой").place(x=0, y=35)
+    Label(frm_tips, bg="white", fg="black",
+          text="<-- роговой").place(x=0, y=35)
 
     def check_result():
         if (len(valid_puzzles) == len(data.data["cytology"]["tasks"][2]["options"])):
