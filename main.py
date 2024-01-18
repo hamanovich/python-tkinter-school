@@ -76,8 +76,8 @@ def choose_topic(slug, name):
         task_2_3()
 
     if slug == "cytology":
-        # task_3_1()
-        task_3_2()
+        task_3_1()
+        # task_3_2()
         # task_3_3()
 
     if btn_home is None:
@@ -550,21 +550,23 @@ def task_2_3():
 
     all_elements = []
     valid_elements = []
+
     def check_position(name, x, y):
         value = get_value(name, options)
-        match_lbl = [lbl for lbl in draggable_labels if lbl.cget("text") == name][0]
+        match_lbl = [
+            lbl for lbl in draggable_labels if lbl.cget("text") == name][0]
         all_elements.append(match_lbl)
 
         if ((x < 190 and y < 215 and value == "микроэлемент") or (x > 230 and y < 215 and value == "макроэлемент")):
             valid_elements.append(match_lbl)
         elif match_lbl in valid_elements:
-            valid_elements.remove(match_lbl) 
+            valid_elements.remove(match_lbl)
 
     def check_result():
         valid_element_names = [lbl.cget("text") for lbl in valid_elements]
         for el in all_elements:
             if (el.cget("text") in valid_element_names):
-                el.config(bg="green") 
+                el.config(bg="green")
             else:
                 el.config(bg="red")
 
@@ -594,7 +596,11 @@ def task_2_3():
 
 
 def task_3_1():
-    global cytology_photo_3_1_1, cytology_photo_3_1_2
+    global cytology_photo_3_1_0
+    global cytology_photos
+
+    options = data.data["cytology"]["tasks"][0]["options"]
+
     frm_task_3_1.grid()
     lbl_intro = Label(frm_task_3_1,
                       anchor=W,
@@ -606,18 +612,63 @@ def task_3_1():
                       text=data.data["cytology"]["tasks"][0]["name"])
     lbl_intro.grid(row=0, column=0)
 
-    canvas = Canvas(frm_task_3_1, width=650, height=650,
-                    bg="white", highlightthickness=1)
-    canvas.grid(row=1, column=0)
+    frm_wrapper = Frame(frm_task_3_1, bg="white", height=750, width=464, bd=0)
+    frm_wrapper.grid(row=1, column=0)
+    frm_wrapper.grid_propagate(0)
 
-    img1 = PilImage.open("images/cytology/клетка.png")
-    cytology_photo_3_1_1 = ImageTk.PhotoImage(img1)
+    canvas = Canvas(frm_wrapper, width=464, height=750,
+                    bg="white", highlightthickness=0)
+    canvas.grid(row=0, column=0)
 
-    img2 = PilImage.open("images/cytology/ядро.png")
-    cytology_photo_3_1_2 = ImageTk.PhotoImage(img2)
+    image_paths = [opt["img_path"] for (_, opt) in options]
+    cytology_photos = [
+        ImageTk.PhotoImage(PilImage.open(img_path))
+        for img_path in image_paths
+    ]
 
-    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_1_1)
-    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_1_2)
+    draggable_texts = [name for (name, _) in options]
+
+    img0 = PilImage.open("images/cytology/клетка.png")
+    cytology_photo_3_1_0 = ImageTk.PhotoImage(img0)
+    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_1_0)
+
+    valid_options = []
+
+    def check_position(name, x, y):
+        value = get_value(name, options)
+
+        if (x > 15 and x < 350 and y > 30 and y < 380 and value["required"] == True
+                or not (x > 15 and x < 350 and y > 30 and y < 380 and value["required"] == False)):
+            if (name not in valid_options):
+                valid_options.append(name)
+        else:
+            if (name in valid_options):
+                valid_options.remove(name)
+
+    draggable_lbls = []
+    for i, text in enumerate(draggable_texts):
+        lbl = DraggableWidget(
+            frm_wrapper, cursor="hand2", bd=1, text=text,
+            bg="lightgreen", relief=SOLID,
+            image=cytology_photos[i],
+            on_release_callback=check_position
+        )
+        lbl.place(x=randint(10, 310), y=randint(465, 590))
+        draggable_lbls.append(lbl)
+
+    def check_result():
+        for el in draggable_lbls:
+            if (el.cget("text") in valid_options):
+                el.config(bg="green")
+            else:
+                el.config(bg="red")
+
+        if (len(valid_options) == len(options)):
+            increase_score()
+
+    check_button = Button(frm_task_3_1, text="Проверить результат", font=font.Font(
+        size=20), cursor="hand2", command=check_result)
+    check_button.grid(row=2, column=0, pady=20, sticky=EW)
 
 
 def task_3_2():
