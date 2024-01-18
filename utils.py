@@ -25,3 +25,11 @@ def get_value(key, options):
     for element, category in options:
         if element == key:
             return category
+
+# Tkinter utils
+
+
+def clear_frame_content(frame):
+    frame.grid_remove()
+    for widget in frame.winfo_children():
+        widget.destroy()

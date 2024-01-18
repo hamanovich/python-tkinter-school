@@ -35,11 +35,8 @@ window.title(TITLE)
 window.rowconfigure(0, minsize=1000, weight=1)
 window.columnconfigure(1, minsize=800, weight=1)
 
-
-def clear_frame_content(frame):
-    frame.grid_remove()
-    for widget in frame.winfo_children():
-        widget.destroy()
+tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
+         "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3"]
 
 
 def choose_topic(slug, name):
@@ -58,21 +55,7 @@ def choose_topic(slug, name):
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
 
-    # TODO: Make landing screens for each section
-    if slug == "botanika":
-        task_1_1()
-        # task_1_2()
-        # task_1_3()
-
-    if slug == "anatomy":
-        # task_2_1()
-        # task_2_2()
-        task_2_3()
-
-    if slug == "cytology":
-        # task_3_1()
-        # task_3_2()
-        task_3_3()
+    landing_by_topic(slug)
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -172,7 +155,8 @@ frm_landing = Frame(frm_content, bg="lightgreen")
 frm_landing.grid(row=0, column=0)
 
 frames = {}
-frame_ids = ["1_1", "1_2", "1_3", "2_1", "2_2", "2_3", "3_1", "3_2", "3_3"]
+frame_ids = ["botanika", "anatomy", "cytology", "1_1", "1_2", "1_3",
+             "2_1", "2_2", "2_3", "3_1", "3_2", "3_3"]
 for frame_id in frame_ids:
     frame = Frame(frm_content, bg=frm_main.cget("bg"))
     frame.grid(row=0, column=0)
@@ -182,6 +166,11 @@ for frame_id in frame_ids:
 total_tasks = sum(len(cat["tasks"]) for cat in data.data.values())
 score = 0
 
+def start_game():
+    frm_landing.grid_remove()
+    for frame_id in frame_ids:
+        clear_frame_content(frames[frame_id])
+    globals()[tasks[0]]()
 
 # ============
 # LANDING SCREEN
@@ -208,6 +197,31 @@ def landing(frame):
         lbl_text.grid(row=1, column=0)
         lbl_text.bind("<Button-1>", lambda _,
                       slug=slug, name=name: choose_topic(slug, name))
+
+    lbl_start = Label(frame, text="Начать путешествие", font=font.Font(size=32), anchor=CENTER,
+                      cursor="hand2", bg="darkblue", borderwidth=2, relief=GROOVE, height=6, justify=CENTER)
+    lbl_start.grid(row=2, column=0, columnspan=4, padx=10, pady=50, sticky=EW)
+    lbl_start.bind("<Button-1>", lambda _: start_game())
+
+
+def landing_by_topic(topic_name):
+    frames[topic_name].grid()
+    info = data.data[topic_name]
+
+    lbl_intro = Label(frames[topic_name],
+                      anchor=W,
+                      wraplength=500,
+                      bg=frm_main.cget("bg"),
+                      fg="black",
+                      pady=30,
+                      font=font.Font(size=20),
+                      text=info["intro"])
+    lbl_intro.grid(row=0, column=0)
+
+    for i, detail in enumerate(info["details"]):
+        lbl = Label(frames[topic_name], bg="lightgreen", fg="black", wraplength=500, anchor=W,
+                         text=detail, font=font.Font(size=16))
+        lbl.grid(row=i+1, column=0, pady=10)
 
 
 # =============
@@ -318,7 +332,6 @@ def task_1_2():
                 entry.config(bg="white", fg="black")
                 entry.delete(0, END)
 
-    # Draw grid
     for row, option in enumerate(data.data["botanika"]["tasks"][1]["options"]):
         for i in range(0, option["padLeft"]):
             label = Label(frm_crossword, width=2, bg=frm_panel.cget("bg"))
@@ -362,6 +375,13 @@ def task_1_3():
                      font=font.Font(size=16),
                      text=data.data["botanika"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0)
+
+    def check_result():
+        pass
+
+    check_result_button = Button(
+        frames["1_3"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
+    check_result_button.grid(row=20, column=0, pady=10, sticky=EW)
 
 
 # ======
