@@ -166,14 +166,17 @@ for frame_id in frame_ids:
 total_tasks = sum(len(cat["tasks"]) for cat in data.data.values())
 score = 0
 
+
 def start_game():
     frm_landing.grid_remove()
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
-    globals()[tasks[0]]()
+    globals()[tasks[2]]()
 
 # ============
 # LANDING SCREEN
+
+
 def landing(frame):
     lbl_landing = Label(frame,
                         anchor=W,
@@ -220,7 +223,7 @@ def landing_by_topic(topic_name):
 
     for i, detail in enumerate(info["details"]):
         lbl = Label(frames[topic_name], bg="lightgreen", fg="black", wraplength=500, anchor=W,
-                         text=detail, font=font.Font(size=16))
+                    text=detail, font=font.Font(size=16))
         lbl.grid(row=i+1, column=0, pady=10)
 
 
@@ -366,7 +369,12 @@ def task_1_2():
 
 
 def task_1_3():
+    global botanika_photo_1_3_0
+    global botanika_photos
+
     frames["1_3"].grid()
+
+    options = data.data["botanika"]["tasks"][2]["options"]
 
     lbl_task = Label(frames["1_3"], anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
@@ -376,8 +384,62 @@ def task_1_3():
                      text=data.data["botanika"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0)
 
+    frm_wrapper = Frame(frames["1_3"],
+                        bg="white", height=650, width=650, bd=0)
+    frm_wrapper.grid(row=1, column=0)
+    frm_wrapper.grid_propagate(0)
+
+    canvas = Canvas(frm_wrapper, width=650, height=650,
+                    bg="white", highlightthickness=0)
+    canvas.grid(row=0, column=0)
+
+    image_paths = [opt["img_path"] for (_, opt) in options]
+    botanika_photos = [
+        ImageTk.PhotoImage(PilImage.open(img_path))
+        for img_path in image_paths
+    ]
+
+    draggable_texts = [name for (name, _) in options]
+
+    img0 = PilImage.open("images/botanika/botanika_3_3-00.png")
+    botanika_photo_1_3_0 = ImageTk.PhotoImage(img0)
+    canvas.create_image(0, 0, anchor=NW, image=botanika_photo_1_3_0)
+
+    valid_options = []
+
+    def check_position(name, x, y):
+        diff = 25
+        xx, yy = find_coordinates(options, name)
+
+        print(name, x, y, xx, yy)
+
+        if (abs(xx - x) < diff and abs(yy - y) < diff):
+            if (name not in valid_options):
+                valid_options.append(name)
+        else:
+            if (name in valid_options):
+                valid_options.remove(name)
+
+    draggable_lbls = []
+    for i, text in enumerate(draggable_texts):
+        lbl = DraggableWidget(
+            frm_wrapper, cursor="hand2", bd=1, text=text,
+            bg="white", relief=SOLID,
+            image=botanika_photos[i],
+            on_release_callback=check_position
+        )
+        lbl.place(x=randint(100, 350), y=randint(100, 350))
+        draggable_lbls.append(lbl)
+
     def check_result():
-        pass
+        for el in draggable_lbls:
+            if (el.cget("text") in valid_options):
+                el.config(bg="green")
+            else:
+                el.config(bg="red")
+
+        if (len(valid_options) == len(options)):
+            increase_score()
 
     check_result_button = Button(
         frames["1_3"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
@@ -461,6 +523,7 @@ def task_2_2():
     lbl_image.image = tk_image
     lbl_image.grid(row=1, column=0)
 
+    # TODO: Implement
     def check_result():
         pass
 
@@ -471,6 +534,7 @@ def task_2_2():
         match_btn = [
             btn for btn in draggable_labels if btn.cget("text") == name][0]
 
+        # TODO: Update coords
         if (abs(match_option["x"] - x)) < diff and abs(match_option["y"] - y) < diff:
             match_btn.config(highlightbackground="green", fg="green")
         else:

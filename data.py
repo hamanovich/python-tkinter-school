@@ -90,25 +90,25 @@ data = {
             {
                 "name": "Создайте цикл растения, располагая картинки в правильной последовательности",
                 "options": [
-                    (1, {"x": 0, "y": 0,
+                    (1, {"x": 20, "y": 135,
                      "img_path": "images/botanika/botanika_3_3-01.png"}),
-                    (2, {"x": 0, "y": 0,
+                    (2, {"x": 200, "y": 20,
                      "img_path": "images/botanika/botanika_3_3-02.png"}),
-                    (3, {"x": 0, "y": 0,
+                    (3, {"x": 320, "y": 5,
                      "img_path": "images/botanika/botanika_3_3-03.png"}),
-                    (4, {"x": 0, "y": 0,
+                    (4, {"x": 460, "y": 75,
                      "img_path": "images/botanika/botanika_3_3-04.png"}),
-                    (5, {"x": 0, "y": 0,
+                    (5, {"x": 485, "y": 150,
                      "img_path": "images/botanika/botanika_3_3-05.png"}),
-                    (6, {"x": 0, "y": 0,
+                    (6, {"x": 535, "y": 290,
                      "img_path": "images/botanika/botanika_3_3-06.png"}),
-                    (7, {"x": 0, "y": 0,
+                    (7, {"x": 500, "y": 430,
                      "img_path": "images/botanika/botanika_3_3-07.png"}),
-                    (8, {"x": 0, "y": 0,
+                    (8, {"x": 355, "y": 445,
                      "img_path": "images/botanika/botanika_3_3-08.png"}),
-                    (9, {"x": 0, "y": 0,
+                    (9, {"x": 125, "y": 440,
                      "img_path": "images/botanika/botanika_3_3-09.png"}),
-                    (10, {"x": 0, "y": 0,
+                    (10, {"x": 40, "y": 310,
                      "img_path": "images/botanika/botanika_3_3-10.png"}),
                 ],
             }
@@ -136,6 +136,7 @@ data = {
             {
                 "name": "Подпишите части глаза, перетягивая слова на нужные позиции",
                 "options": [
+                    # TODO: Fix coords
                     ("стекловидное тело", {"x": 260, "y": 130}),
                     ("зрительный нерв", {"x": 270, "y": 315}),
                     ("передняя камера", {"x": 60, "y": 320}),
