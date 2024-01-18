@@ -55,16 +55,10 @@ def choose_topic(slug, name):
     lbl_main.config(text=name)
 
     frm_landing.grid_remove()
-    clear_frame_content(frm_task_1_1)
-    clear_frame_content(frm_task_1_2)
-    clear_frame_content(frm_task_1_3)
-    clear_frame_content(frm_task_2_1)
-    clear_frame_content(frm_task_2_2)
-    clear_frame_content(frm_task_2_3)
-    clear_frame_content(frm_task_3_1)
-    clear_frame_content(frm_task_3_2)
-    clear_frame_content(frm_task_3_3)
+    for frame_id in frame_ids:
+        clear_frame_content(frames[frame_id])
 
+    # TODO: Make landing screens for each section
     if slug == "botanika":
         task_1_1()
         # task_1_2()
@@ -76,9 +70,9 @@ def choose_topic(slug, name):
         task_2_3()
 
     if slug == "cytology":
-        task_3_1()
+        # task_3_1()
         # task_3_2()
-        # task_3_3()
+        task_3_3()
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -102,15 +96,8 @@ def increase_score():
 def go_home():
     global btn_home
     frm_landing.grid()
-    clear_frame_content(frm_task_1_1)
-    clear_frame_content(frm_task_1_2)
-    clear_frame_content(frm_task_1_3)
-    clear_frame_content(frm_task_2_1)
-    clear_frame_content(frm_task_2_2)
-    clear_frame_content(frm_task_2_3)
-    clear_frame_content(frm_task_3_1)
-    clear_frame_content(frm_task_3_2)
-    clear_frame_content(frm_task_3_3)
+    for frame_id in frame_ids:
+        clear_frame_content(frames[frame_id])
     clear_frame_content(btn_home)
     lbl_main.config(text=TITLE)
     btn_home = None
@@ -184,32 +171,12 @@ frm_content.grid(row=1, column=0)
 frm_landing = Frame(frm_content, bg="lightgreen")
 frm_landing.grid(row=0, column=0)
 
-frm_task_1_1 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_1_1.grid(row=0, column=0)
-
-frm_task_1_2 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_1_2.grid(row=0, column=0)
-
-frm_task_1_3 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_1_3.grid(row=0, column=0)
-
-frm_task_2_1 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_2_1.grid(row=0, column=0)
-
-frm_task_2_2 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_2_2.grid(row=0, column=0)
-
-frm_task_2_3 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_2_3.grid(row=0, column=0)
-
-frm_task_3_1 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_3_1.grid(row=0, column=0)
-
-frm_task_3_2 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_3_2.grid(row=0, column=0)
-
-frm_task_3_3 = Frame(frm_content, bg=frm_main.cget("bg"))
-frm_task_3_3.grid(row=0, column=0)
+frames = {}
+frame_ids = ["1_1", "1_2", "1_3", "2_1", "2_2", "2_3", "3_1", "3_2", "3_3"]
+for frame_id in frame_ids:
+    frame = Frame(frm_content, bg=frm_main.cget("bg"))
+    frame.grid(row=0, column=0)
+    frames[frame_id] = frame
 
 
 total_tasks = sum(len(cat["tasks"]) for cat in data.data.values())
@@ -248,9 +215,9 @@ def landing(frame):
 
 # BOTANIKA
 def task_1_1():
-    frm_task_1_1.grid()
+    frames["1_1"].grid()
 
-    lbl_task = Label(frm_task_1_1, anchor=W, wraplength=600,
+    lbl_task = Label(frames["1_1"], anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
                      fg="black",
                      pady=5,
@@ -258,7 +225,7 @@ def task_1_1():
                      text=data.data["botanika"]["tasks"][0]["name"])
     lbl_task.grid(row=0, column=0)
 
-    frm_options = Frame(frm_task_1_1, bg=frm_main.cget("bg"))
+    frm_options = Frame(frames["1_1"], bg=frm_main.cget("bg"))
     frm_options.grid(row=1, column=0)
 
     for i, option in enumerate(data.data["botanika"]["tasks"][0]["options"]):
@@ -269,7 +236,7 @@ def task_1_1():
                            text=f"{option[0]}. {option[1]}")
         lbl_option.grid(row=i, column=0)
 
-    frm_task = Frame(frm_task_1_1, bg=frm_main.cget("bg"))
+    frm_task = Frame(frames["1_1"], bg=frm_main.cget("bg"))
     frm_task.grid(row=2, column=0, pady=20)
 
     row_entries = []
@@ -292,14 +259,14 @@ def task_1_1():
                     variant.config(bg="green", fg="white")
 
     check_result_button = Button(
-        frm_task_1_1, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_task)
+        frames["1_1"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_task)
     check_result_button.grid(row=4, column=0, pady=10, sticky=EW)
 
 
 def task_1_2():
-    frm_task_1_2.grid()
+    frames["1_2"].grid()
 
-    lbl_task = Label(frm_task_1_2, anchor=W, wraplength=600,
+    lbl_task = Label(frames["1_2"], anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
                      fg="black",
                      pady=5,
@@ -307,7 +274,8 @@ def task_1_2():
                      text=data.data["botanika"]["tasks"][1]["name"])
     lbl_task.grid(row=0, column=0)
 
-    frm_crossword_questions = Frame(frm_task_1_2, bg=frm_main.cget("bg"))
+    frm_crossword_questions = Frame(
+        frames["1_2"], bg=frm_main.cget("bg"))
     frm_crossword_questions.grid(row=1, column=0)
 
     for i, option in enumerate(data.data["botanika"]["tasks"][1]["options"]):
@@ -318,7 +286,7 @@ def task_1_2():
                                        text=f"{i+1}. {option["question"]}")
         lbl_crossword_question.grid(row=i, column=0)
 
-    frm_crossword = Frame(frm_task_1_2, bg=frm_main.cget("bg"))
+    frm_crossword = Frame(frames["1_2"], bg=frm_main.cget("bg"))
     frm_crossword.grid(row=2, column=0, pady=20)
 
     crossword_answers = []
@@ -376,18 +344,18 @@ def task_1_2():
         crossword_answers.append(row_entries)
 
     check_result_button = Button(
-        frm_task_1_2, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_crossword)
+        frames["1_2"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_crossword)
     check_result_button.grid(row=20, column=0, pady=10, sticky=EW)
 
     reset_crossword_button = Button(
-        frm_task_1_2, text="Начать сначала", font=font.Font(size=20), cursor="hand2", command=reset_crossword)
+        frames["1_2"], text="Начать сначала", font=font.Font(size=20), cursor="hand2", command=reset_crossword)
     reset_crossword_button.grid(row=21, column=0, pady=10, sticky=EW)
 
 
 def task_1_3():
-    frm_task_1_3.grid()
+    frames["1_3"].grid()
 
-    lbl_task = Label(frm_task_1_3, anchor=W, wraplength=600,
+    lbl_task = Label(frames["1_3"], anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
                      fg="black",
                      pady=5,
@@ -402,16 +370,16 @@ def task_1_3():
 
 def task_2_1():
     global entry_answer
-    frm_task_2_1.grid()
+    frames["2_1"].grid()
 
-    lbl_task = Label(frm_task_2_1, anchor=W, wraplength=600,
+    lbl_task = Label(frames["2_1"], anchor=W, wraplength=600,
                      bg=frm_main.cget("bg"),
                      fg="black",
                      pady=5,
                      text=data.data["anatomy"]["tasks"][0]["name"])
     lbl_task.grid(row=0, column=0)
 
-    entry_answer = Entry(frm_task_2_1, bg="white",
+    entry_answer = Entry(frames["2_1"], bg="white",
                          fg="black", font=font.Font(size=20))
     entry_answer.grid(row=1, column=0, pady=10, sticky=EW)
 
@@ -423,7 +391,7 @@ def task_2_1():
         entry_answer.insert(0, updated_text)
 
     for (idx, option) in data.data["anatomy"]["tasks"][0]["options"]:
-        row_frame = Frame(frm_task_2_1, bg="white")
+        row_frame = Frame(frames["2_1"], bg="white")
         row_frame.grid(row=idx+1, column=0, sticky=EW)
         row_frame.columnconfigure(1, weight=1)
 
@@ -452,13 +420,13 @@ def task_2_1():
             entry_answer.config(bg="red", fg="white")
 
     check_result_button = Button(
-        frm_task_2_1, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
+        frames["2_1"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
     check_result_button.grid(row=10, column=0, pady=10, sticky=EW)
 
 
 def task_2_2():
-    frm_task_2_2.grid()
-    lbl_task = Label(frm_task_2_2,
+    frames["2_2"].grid()
+    lbl_task = Label(frames["2_2"],
                      anchor=W,
                      wraplength=500,
                      bg=frm_main.cget("bg"),
@@ -469,7 +437,7 @@ def task_2_2():
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
     tk_image = PhotoImage(file=resource_path("images/eye_350.png"))
-    lbl_image = Label(frm_task_2_2, image=tk_image)
+    lbl_image = Label(frames["2_2"], image=tk_image)
     lbl_image.image = tk_image
     lbl_image.grid(row=1, column=0)
 
@@ -491,27 +459,27 @@ def task_2_2():
     draggable_labels = []
     for idx, (name, _) in enumerate(data.data["anatomy"]["tasks"][1]["options"]):
         draggable_label = DraggableWidget(
-            frm_task_2_2, cursor="hand2", relief=RAISED, bd=1, bg="#666", fg="white", text=name, on_release_callback=check_position)
+            frames["2_2"], cursor="hand2", relief=RAISED, bd=1, bg="#666", fg="white", text=name, on_release_callback=check_position)
         draggable_label.place(x=5, y=50 + idx * 25)
         draggable_labels.append(draggable_label)
 
     check_result_button = Button(
-        frm_task_2_2, text="Проверить результат", font=font.Font(size=20), command=check_result)
+        frames["2_2"], text="Проверить результат", font=font.Font(size=20), command=check_result)
     check_result_button.grid(row=2, column=0, pady=10, sticky=EW)
 
     link_label = Label(
-        frm_task_2_2, text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
+        frames["2_2"], text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
     link_label.grid(row=3, column=0, pady=10)
     link_label.bind(
         "<Button-1>", lambda _: webbrowser.open(data.data["anatomy"]["tasks"][1]["meta"]["youtube"]))
 
 
 def task_2_3():
-    frm_task_2_3.grid()
+    frames["2_3"].grid()
 
     options = data.data["anatomy"]["tasks"][2]["options"]
 
-    lbl_task = Label(frm_task_2_3,
+    lbl_task = Label(frames["2_3"],
                      anchor=W,
                      wraplength=500,
                      bg=frm_main.cget("bg"),
@@ -521,11 +489,11 @@ def task_2_3():
                      text=data.data["anatomy"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
-    container = Frame(frm_task_2_3, height=300)
+    container = Frame(frames["2_3"], height=300)
     container.grid(sticky=EW)
-    frm_task_2_3.grid_rowconfigure(0, weight=1)
-    frm_task_2_3.grid_columnconfigure(0, weight=1)
-    frm_task_2_3.update_idletasks()
+    frames["2_3"].grid_rowconfigure(0, weight=1)
+    frames["2_3"].grid_columnconfigure(0, weight=1)
+    frames["2_3"].update_idletasks()
 
     frame1 = Frame(container, bg="white", bd=3, highlightthickness=5,
                    highlightbackground="white", relief=SOLID, height=250)
@@ -581,11 +549,11 @@ def task_2_3():
         draggable_labels.append(draggable_label)
 
     check_result_button = Button(
-        frm_task_2_3, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
+        frames["2_3"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
     check_result_button.grid(row=3, column=0, pady=(50, 0), sticky=EW)
 
     link_label = Label(
-        frm_task_2_3, text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
+        frames["2_3"], text="Узнать больше на Youtube.com", bg="#333", fg="lightgreen", cursor="hand2")
     link_label.grid(row=4, column=0, pady=10)
     link_label.bind(
         "<Button-1>", lambda _: webbrowser.open(data.data["anatomy"]["tasks"][2]["meta"]["youtube"]))
@@ -601,8 +569,8 @@ def task_3_1():
 
     options = data.data["cytology"]["tasks"][0]["options"]
 
-    frm_task_3_1.grid()
-    lbl_intro = Label(frm_task_3_1,
+    frames["3_1"].grid()
+    lbl_intro = Label(frames["3_1"],
                       anchor=W,
                       wraplength=500,
                       bg=frm_main.cget("bg"),
@@ -612,7 +580,8 @@ def task_3_1():
                       text=data.data["cytology"]["tasks"][0]["name"])
     lbl_intro.grid(row=0, column=0)
 
-    frm_wrapper = Frame(frm_task_3_1, bg="white", height=750, width=464, bd=0)
+    frm_wrapper = Frame(frames["3_1"],
+                        bg="white", height=750, width=464, bd=0)
     frm_wrapper.grid(row=1, column=0)
     frm_wrapper.grid_propagate(0)
 
@@ -666,14 +635,14 @@ def task_3_1():
         if (len(valid_options) == len(options)):
             increase_score()
 
-    check_button = Button(frm_task_3_1, text="Проверить результат", font=font.Font(
+    check_button = Button(frames["3_1"], text="Проверить результат", font=font.Font(
         size=20), cursor="hand2", command=check_result)
     check_button.grid(row=2, column=0, pady=20, sticky=EW)
 
 
 def task_3_2():
-    frm_task_3_2.grid()
-    lbl_task = Label(frm_task_3_2,
+    frames["3_2"].grid()
+    lbl_task = Label(frames["3_2"],
                      anchor=W,
                      wraplength=500,
                      bg=frm_main.cget("bg"),
@@ -700,19 +669,20 @@ def task_3_2():
 
     for i, (name, correct_answer) in enumerate(options):
         var = StringVar(value="")
-        label = Label(frm_task_3_2, text=name, font=font.Font(size=16), bg=frm_main.cget("bg"),
+        label = Label(frames["3_2"], text=name, font=font.Font(size=16), bg=frm_main.cget("bg"),
                       fg="black")
         label.grid(row=i+1, column=0)
 
         for j, choice in enumerate(choice_values):
-            rad_button = Radiobutton(frm_task_3_2, text=choice, variable=var, value=choice, bg=frm_main.cget("bg"),
+            rad_button = Radiobutton(frames["3_2"], text=choice, variable=var, value=choice, bg=frm_main.cget("bg"),
                                      fg="black")
             rad_button.grid(row=i+1, column=j+1)
 
+        # TODO: fix, otherwise next time it's broken
         options[i] = (
             name, correct_answer, var, label)
 
-    check_button = Button(frm_task_3_2, text="Проверить результат", font=font.Font(
+    check_button = Button(frames["3_2"], text="Проверить результат", font=font.Font(
         size=20), cursor="hand2", command=check_result)
     check_button.grid(row=i+2, column=0, pady=50, sticky=EW,
                       columnspan=4)
@@ -720,15 +690,12 @@ def task_3_2():
 
 def task_3_3():
     global cytology_photo_3_3_1
-    global cytology_photo_3_3_2
-    global cytology_photo_3_3_3
-    global cytology_photo_3_3_4
-    global cytology_photo_3_3_5
-    global cytology_photo_3_3_6
-    global cytology_photo_3_3_7
+    global cytology_photos
 
-    frm_task_3_3.grid()
-    lbl_task = Label(frm_task_3_3,
+    options = data.data["cytology"]["tasks"][2]["options"]
+
+    frames["3_3"].grid()
+    lbl_task = Label(frames["3_3"],
                      anchor=W,
                      wraplength=500,
                      bg=frm_main.cget("bg"),
@@ -738,7 +705,7 @@ def task_3_3():
                      text=data.data["cytology"]["tasks"][2]["name"])
     lbl_task.grid(row=0, column=0, pady=(0, 15))
 
-    frm_wrapper = Frame(frm_task_3_3, bg="white", height=508,
+    frm_wrapper = Frame(frames["3_3"], bg="white", height=508,
                         width=700, bd=0)
     frm_wrapper.grid(row=1, column=0)
     frm_wrapper.grid_propagate(0)
@@ -756,27 +723,19 @@ def task_3_3():
 
     img1 = PilImage.open("images/cytology/cytology_3_3_00.jpg")
     cytology_photo_3_3_1 = ImageTk.PhotoImage(img1)
-    img2 = PilImage.open("images/cytology/cytology_3_3_01.jpg")
-    cytology_photo_3_3_2 = ImageTk.PhotoImage(img2)
-    img3 = PilImage.open("images/cytology/cytology_3_3_02.jpg")
-    cytology_photo_3_3_3 = ImageTk.PhotoImage(img3)
-    img4 = PilImage.open("images/cytology/cytology_3_3_03.jpg")
-    cytology_photo_3_3_4 = ImageTk.PhotoImage(img4)
-    img5 = PilImage.open("images/cytology/cytology_3_3_04.jpg")
-    cytology_photo_3_3_5 = ImageTk.PhotoImage(img5)
-    img6 = PilImage.open("images/cytology/cytology_3_3_05.jpg")
-    cytology_photo_3_3_6 = ImageTk.PhotoImage(img6)
-    img7 = PilImage.open("images/cytology/cytology_3_3_06.jpg")
-    cytology_photo_3_3_7 = ImageTk.PhotoImage(img7)
-
     canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_3_1)
+
+    image_paths = [opt["img_path"] for (_, opt) in options]
+    cytology_photos = [
+        ImageTk.PhotoImage(PilImage.open(img_path))
+        for img_path in image_paths
+    ]
 
     valid_puzzles = []
 
     def check_position(name, x, y):
         diff = 5
-        xx, yy = find_coordinates(
-            data.data["cytology"]["tasks"][2]["options"], name)
+        xx, yy = find_coordinates(options, name)
 
         if (abs(xx - x) < diff and abs(yy - y) < diff):
             if (name not in valid_puzzles):
@@ -785,41 +744,25 @@ def task_3_3():
             if (name in valid_puzzles):
                 valid_puzzles.remove(name)
 
-    DraggableWidget(
-        frm_wrapper, cursor="hand2", bd=0, text="дерма", image=cytology_photo_3_3_2, on_release_callback=check_position).place(x=155, y=85)
-    Label(frm_tips, bg="white", fg="black", text="<-- дерма").place(x=0, y=450)
+    draggable_texts = [name for (name, _) in options]
+    for i, text in enumerate(draggable_texts):
+        lbl = DraggableWidget(
+            frm_wrapper, cursor="hand2", bd=0, text=text,
+            image=cytology_photos[i],
+            on_release_callback=check_position
+        )
+        lbl.place(x=randint(20, 160), y=randint(70, 260))
 
-    DraggableWidget(
-        frm_wrapper, cursor="hand2", bd=0, text="базальный", image=cytology_photo_3_3_3, on_release_callback=check_position).place(x=40, y=195)
-    Label(frm_tips, bg="white", fg="black",
-          text="<-- базальный").place(x=0, y=375)
-
-    DraggableWidget(
-        frm_wrapper, cursor="hand2", bd=0, text="шиповатый", image=cytology_photo_3_3_4, on_release_callback=check_position).place(x=75, y=115)
-    Label(frm_tips, bg="white", fg="black",
-          text="<-- шиповатый").place(x=0, y=300)
-
-    DraggableWidget(
-        frm_wrapper, cursor="hand2", bd=0, text="зернистый", image=cytology_photo_3_3_5, on_release_callback=check_position).place(x=140, y=205)
-    Label(frm_tips, bg="white", fg="black",
-          text="<-- зернистый").place(x=0, y=210)
-
-    DraggableWidget(
-        frm_wrapper, cursor="hand2", bd=0, text="блестящий", image=cytology_photo_3_3_6, on_release_callback=check_position).place(x=30, y=70)
-    Label(frm_tips, bg="white", fg="black",
-          text="<-- блестящий").place(x=0, y=120)
-
-    DraggableWidget(
-        frm_wrapper, cursor="hand2", bd=0, text="роговой", image=cytology_photo_3_3_7, on_release_callback=check_position).place(x=25, y=255)
-    Label(frm_tips, bg="white", fg="black",
-          text="<-- роговой").place(x=0, y=35)
+    for (name, option_config) in options:
+        Label(frm_tips, bg="white", fg="black",
+              text=f"<-- {name}").place(x=0, y=option_config["hint_y"])
 
     def check_result():
         if (len(valid_puzzles) == len(data.data["cytology"]["tasks"][2]["options"])):
             increase_score()
 
     check_result_button = Button(
-        frm_task_3_3, text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
+        frames["3_3"], text="Проверить результат", font=font.Font(size=20), cursor="hand2", command=check_result)
     check_result_button.grid(row=3, column=0, pady=50, sticky=EW)
 
     def show_tips():
@@ -827,7 +770,7 @@ def task_3_3():
         btn_tip.grid_remove()
         frm_tips.after(5000, frm_tips.grid_remove)
 
-    btn_tip = Button(frm_task_3_3, text="Показать подсказку на 5 секунд", highlightbackground=frm_panel.cget(
+    btn_tip = Button(frames["3_3"], text="Показать подсказку на 5 секунд", highlightbackground=frm_panel.cget(
         "bg"), cursor="hand2",  command=show_tips)
     btn_tip.grid()
 

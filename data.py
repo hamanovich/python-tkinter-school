@@ -85,9 +85,6 @@ data = {
                 "answer": "семязачаток"
             },
             {
-                # расположить картинки в разнобой, чтобы потом можно было создать цикл растения
-                # из картинок в правильной последовательности( я все пришлю)
-                # если неправильно одна картинка становится- то красным, правильно- можно дальше продолжать
                 "name": "Создайте цикл растения, располагая картинки в правильной последовательности",
                 "options": [
                     (1, {"x": 0, "y": 0,
@@ -216,17 +213,17 @@ data = {
                 "name": "Собрать слои эпидермиса в правильной последовательности",
                 "options": [
                     ("дерма", {
-                     "x": 0, "y": 415, "img_path": "images/cytology/cytology_3_3_01.jpg"}),
+                     "x": 0, "y": 415, "hint_y": 450, "img_path": "images/cytology/cytology_3_3_01.jpg"}),
                     ("базальный", {
-                     "x": 0, "y": 356, "img_path": "images/cytology/cytology_3_3_02.jpg"}),
+                     "x": 0, "y": 356, "hint_y": 375, "img_path": "images/cytology/cytology_3_3_02.jpg"}),
                     ("шиповатый", {
-                     "x": 0, "y": 285, "img_path": "images/cytology/cytology_3_3_03.jpg"}),
+                     "x": 0, "y": 285, "hint_y": 300, "img_path": "images/cytology/cytology_3_3_03.jpg"}),
                     ("зернистый", {
-                     "x": 0, "y": 164, "img_path": "images/cytology/cytology_3_3_04.jpg"}),
+                     "x": 0, "y": 164, "hint_y": 210, "img_path": "images/cytology/cytology_3_3_04.jpg"}),
                     ("блестящий", {
-                     "x": 0, "y": 94, "img_path": "images/cytology/cytology_3_3_05.jpg"}),
+                     "x": 0, "y": 94, "hint_y": 120, "img_path": "images/cytology/cytology_3_3_05.jpg"}),
                     ("роговой", {
-                     "x": 0, "y": 0, "img_path": "images/cytology/cytology_3_3_06.jpg"}),
+                     "x": 0, "y": 0, "hint_y": 35, "img_path": "images/cytology/cytology_3_3_06.jpg"}),
                 ]
             }
         ]
