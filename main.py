@@ -45,8 +45,15 @@ CONFIG = {
     }
 }
 
+frames = {}
+frame_ids = ["botanika", "anatomy", "cytology", "1_1", "1_2", "1_3",
+             "2_1", "2_2", "2_3", "3_1", "3_2", "3_3", "result"]
 tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
          "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "landing_result"]
+
+total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
+active_task_number = 0
+score = 0
 
 
 def choose_topic(slug, name):
@@ -68,6 +75,7 @@ def choose_topic(slug, name):
         clear_frame_content(frames[frame_id])
 
     landing_by_topic(slug)
+    reset_score()
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
@@ -79,8 +87,13 @@ def choose_topic(slug, name):
         btn_home.grid(row=5, column=0, pady=5, sticky=EW)
 
     active_task_number = 0
-    # TODO: reset score
     score = 0
+
+
+def reset_score():
+    global score
+    score = 0
+    lbl_score.config(text=f"{score}/{total_tasks}")
 
 
 def increase_score():
@@ -114,8 +127,6 @@ def left_panel_ui():
     frm_panel.grid(row=0, column=0, sticky=NSEW)
     frm_panel.rowconfigure(2, weight=1)
 
-    print(score)
-
     lbl_panel = Label(frm_panel, text="Выберите раздел:",
                       bg=CONFIG["bg"], fg="black")
     lbl_panel.grid(row=0, column=0, padx=5, pady=1)
@@ -143,9 +154,8 @@ def left_panel_ui():
         "bg"), fg="black", font=font.Font(size=10))
     lbl_copyrights.grid(row=0, column=0)
 
-    lbl_score = Label(frm_panel, text=f"{
-                      score}/{total_tasks}", font=font.Font(size=30), bg=CONFIG["bg"], fg="black")
-    lbl_score.grid(row=3, column=0, padx=5, pady=1)
+    Label(window, text=f"{score}/{total_tasks}",
+          font=CONFIG["font_size"]["heading"], bg=CONFIG["bg"], fg="black").place(x=10, y=950)
 
     # TODO: Add Sunflower image
     # tk_image = PhotoImage(file=resource_path("images/sunflower.png"))
@@ -165,25 +175,16 @@ frm_content.grid(row=1, column=0)
 frm_landing = Frame(frm_content, bg=CONFIG["bg"])
 frm_landing.grid(row=0, column=0)
 
-frames = {}
-frame_ids = ["botanika", "anatomy", "cytology", "1_1", "1_2", "1_3",
-             "2_1", "2_2", "2_3", "3_1", "3_2", "3_3", "result"]
 for frame_id in frame_ids:
     frame = Frame(frm_content, bg=CONFIG["bg"])
     frame.grid(row=0, column=0)
     frames[frame_id] = frame
 
 
-total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
-active_task_number = 0
-score = 0
-
-
 def start_game():
     frm_landing.grid_remove()
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
-    print(active_task_number)
     globals()[tasks[active_task_number]]()
 
 
@@ -195,6 +196,18 @@ def next_task():
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
     globals()[tasks[active_task_number]]()
+
+
+def show_message(success):
+    if (success):
+        messagebox.showinfo(
+            data.messages["task_success_title"], data.messages["task_success_text"])
+        increase_score()
+    else:
+        messagebox.showerror(
+            data.messages["task_error_title"], data.messages["task_error_text"])
+
+    next_task()
 
 
 def get_page_title(frame, text, columnspan=1):
@@ -234,6 +247,7 @@ def landing(frame):
 
 
 def landing_by_topic(topic_name):
+    global preview_img
     frames[topic_name].grid()
     info = data.content[topic_name]
 
@@ -241,12 +255,20 @@ def landing_by_topic(topic_name):
 
     for i, detail in enumerate(info["details"]):
         Label(frames[topic_name], bg=CONFIG["bg"], fg="black", wraplength=600,
-              text=detail, font=CONFIG["font_size"]["text"]).grid(row=i+1, column=0, pady=10)
+              text=detail, font=CONFIG["font_size"]["text"]).grid(row=i+1, column=0, pady=(0, 10))
+
+    canvas = Canvas(frames[topic_name], width=info["preview"]["width"], height=info["preview"]["height"],
+                    bg="white", highlightthickness=0)
+    canvas.grid(row=5, column=0)
+
+    img = PilImage.open(info["preview"]["img_path"])
+    preview_img = ImageTk.PhotoImage(img)
+    canvas.create_image(0, 0, anchor=NW, image=preview_img)
 
 
 def landing_result():
     frames["result"].grid()
-    get_page_title(frames["1_1"], "Вы выполнили все задания.")
+    get_page_title(frames["result"], "Вы выполнили все задания.")
     Label(frames["result"], bg=CONFIG["bg"], fg="black", wraplength=600,
           text=f"Ваш результат: {score}/{total_tasks}", font=CONFIG["font_size"]["title"]).grid(row=1, column=0)
 
@@ -290,17 +312,8 @@ def task_1_1():
                 else:
                     variant.config(bg="green", fg="white")
 
-            def show_message():
-                if (result == task["answer"]):
-                    messagebox.showinfo(
-                        "Задание пройдено!", "Вы набрали +1 бал и готовы к выполнению следующего задания")
-                    increase_score()
-                else:
-                    messagebox.showerror("Задание пройдено с ошибкой!",
-                                         "Вы ошиблись при выполнении задания и не набрали 1 бал. Переходим к выполнению следующего задания")
-                next_task()
-
-            frames["1_1"].after(100, show_message)
+            frames["1_1"].after(
+                100, lambda: show_message(result == task["answer"]))
 
     check_result_button = Button(
         frames["1_1"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_task)
@@ -346,9 +359,8 @@ def task_1_2():
         for char in crossword_keyword:
             keyword += char.get()
 
-        if (keyword == task["answer"] and valid):
-            messagebox.showinfo("Кроссворд разгадан",
-                                "Поздравляю, вы разгадали кроссворд верно!")
+        frames["1_2"].after(
+            100, lambda: show_message(keyword == task["answer"] and valid))
 
     for row, option in enumerate(task["options"]):
         for i in range(0, option["padLeft"]):
@@ -440,13 +452,8 @@ def task_1_3():
             else:
                 el.config(bg="red")
 
-        if (len(valid_options) == len(task["options"])):
-            messagebox.showinfo(
-                "Задание пройдено!", "Вы набрали +1 бал и готовы к выполнению следующего задания")
-            increase_score()
-        else:
-            messagebox.showerror("Задание пройдено с ошибкой!",
-                                 "Вы ошиблись при выполнении задания и не набрали 1 бал. Переходим к выполнению следующего задания")
+        frames["1_3"].after(
+            100, lambda: show_message(len(valid_options) == len(task["options"])))
 
     check_result_button = Button(
         frames["1_3"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
@@ -500,43 +507,66 @@ def task_2_1():
         else:
             entry_answer.config(bg="red", fg="white")
 
+        frames["2_1"].after(
+            100, lambda: show_message(formatted_result == task["answer"]))
+
     check_result_button = Button(
         frames["2_1"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
     check_result_button.grid(row=10, column=0, pady=10, sticky=EW)
 
 
 def task_2_2():
+    global anatomy_photo_2_2_0
     task = data.content["anatomy"]["tasks"][1]
     frames["2_2"].grid()
 
     get_page_title(frames["2_2"], task["name"])
 
-    tk_image = PhotoImage(file=resource_path("images/eye_350.png"))
-    lbl_image = Label(frames["2_2"], image=tk_image)
-    lbl_image.image = tk_image
-    lbl_image.grid(row=1, column=0)
+    frm_wrapper = Frame(frames["2_2"],
+                        bg="white", height=650, width=650, bd=0)
+    frm_wrapper.grid(row=1, column=0)
+    frm_wrapper.grid_propagate(0)
 
-    # TODO: Implement
-    def check_result():
-        pass
+    canvas = Canvas(frm_wrapper, width=650, height=650,
+                    bg="white", highlightthickness=0)
+    canvas.grid(row=0, column=0)
+
+    img0 = PilImage.open(task["bg"])
+    anatomy_photo_2_2_0 = ImageTk.PhotoImage(img0)
+    canvas.create_image(0, 0, anchor=NW, image=anatomy_photo_2_2_0)
+
+    all_options = []
+    valid_options = []
 
     def check_position(name, x, y):
-        diff = 25
+        diff = 30
+        print(name, x, y)
         match_option = [option for (
             n, option) in task["options"] if n == name][0]
-        match_btn = [
+        match_lbl = [
             btn for btn in draggable_labels if btn.cget("text") == name][0]
+        all_options.append(match_lbl)
 
-        # TODO: Update coords
         if (abs(match_option["x"] - x)) < diff and abs(match_option["y"] - y) < diff:
-            match_btn.config(highlightbackground="green", fg="green")
-        else:
-            match_btn.config(highlightbackground="red", fg="red")
+            valid_options.append(match_lbl)
+        elif match_lbl in valid_options:
+            valid_options.remove(match_lbl)
+
+    def check_result():
+        valid_element_names = [lbl.cget("text") for lbl in valid_options]
+        for el in all_options:
+            if (el.cget("text") in valid_element_names):
+                el.config(bg="green")
+            else:
+                el.config(bg="red")
+
+        frames["2_2"].after(
+            100, lambda: show_message(len(valid_options) == len(task["options"])))
 
     draggable_labels = []
     for idx, (name, _) in enumerate(task["options"]):
         draggable_label = DraggableWidget(
-            frames["2_2"], cursor="hand2", relief=RAISED, bd=1, bg="#666", fg="white", text=name, on_release_callback=check_position)
+            frames["2_2"], cursor="hand2", relief=SOLID, bd=1, bg="white", fg="black", text=name, on_release_callback=check_position)
         draggable_label.place(x=5, y=50 + idx * 25)
         draggable_labels.append(draggable_label)
 
@@ -585,35 +615,30 @@ def task_2_3():
     container.grid_columnconfigure(1, weight=1)
     container.grid_rowconfigure(2, weight=1)
 
-    all_elements = []
-    valid_elements = []
+    all_options = []
+    valid_options = []
 
     def check_position(name, x, y):
         value = get_value(name, task["options"])
         match_lbl = [
             lbl for lbl in draggable_labels if lbl.cget("text") == name][0]
-        all_elements.append(match_lbl)
+        all_options.append(match_lbl)
 
         if ((x < 190 and y < 215 and value == "микроэлемент") or (x > 230 and y < 215 and value == "макроэлемент")):
-            valid_elements.append(match_lbl)
-        elif match_lbl in valid_elements:
-            valid_elements.remove(match_lbl)
+            valid_options.append(match_lbl)
+        elif match_lbl in valid_options:
+            valid_options.remove(match_lbl)
 
     def check_result():
-        valid_element_names = [lbl.cget("text") for lbl in valid_elements]
-        for el in all_elements:
+        valid_element_names = [lbl.cget("text") for lbl in valid_options]
+        for el in all_options:
             if (el.cget("text") in valid_element_names):
                 el.config(bg="green")
             else:
                 el.config(bg="red")
 
-        if (len(valid_elements) == len(task["options"])):
-            messagebox.showinfo(
-                "Задание пройдено!", "Вы набрали +1 бал и готовы к выполнению следующего задания")
-            increase_score()
-        else:
-            messagebox.showerror("Задание пройдено с ошибкой!",
-                                 "Вы ошиблись при выполнении задания и не набрали 1 бал. Переходим к выполнению следующего задания")
+        frames["2_3"].after(
+            100, lambda: show_message(len(valid_options) == len(task["options"])))
 
     draggable_labels = []
     for (name, _) in task["options"]:
@@ -695,13 +720,8 @@ def task_3_1():
             else:
                 el.config(bg="red")
 
-        if (len(valid_options) == len(task["options"])):
-            messagebox.showinfo(
-                "Задание пройдено!", "Вы набрали +1 бал и готовы к выполнению следующего задания")
-            increase_score()
-        else:
-            messagebox.showerror("Задание пройдено с ошибкой!",
-                                 "Вы ошиблись при выполнении задания и не набрали 1 бал. Переходим к выполнению следующего задания")
+        frames["3_1"].after(
+            100, lambda: show_message(len(valid_options) == len(task["options"])))
 
     check_button = Button(frames["3_1"], text="Проверить результат", font=font.Font(
         size=20), cursor="hand2", command=check_result)
@@ -722,13 +742,9 @@ def task_3_2():
                 correct_answers += 1
             else:
                 label.config(bg="red", fg="white")
-        if correct_answers == len(task["options"]):
-            messagebox.showinfo(
-                "Задание пройдено!", "Вы набрали +1 бал и готовы к выполнению следующего задания")
-            increase_score()
-        else:
-            messagebox.showerror("Задание пройдено с ошибкой!",
-                                 "Вы ошиблись при выполнении задания и не набрали 1 бал. Переходим к выполнению следующего задания")
+
+        frames["3_2"].after(
+            100, lambda: show_message(correct_answers == len(task["options"])))
 
     choice_values = list(set(value for _, value in task["options"]))
 
@@ -757,6 +773,7 @@ def task_3_3():
     global cytology_photo_3_3_1
     global cytology_photos
     task = data.content["cytology"]["tasks"][2]
+    frames["3_3"].grid()
 
     get_page_title(frames["3_3"], task["name"])
 
@@ -786,18 +803,18 @@ def task_3_3():
         for img_path in image_paths
     ]
 
-    valid_puzzles = []
+    valid_options = []
 
     def check_position(name, x, y):
         diff = 5
         xx, yy = find_coordinates(task["options"], name)
 
         if (abs(xx - x) < diff and abs(yy - y) < diff):
-            if (name not in valid_puzzles):
-                valid_puzzles.append(name)
+            if (name not in valid_options):
+                valid_options.append(name)
         else:
-            if (name in valid_puzzles):
-                valid_puzzles.remove(name)
+            if (name in valid_options):
+                valid_options.remove(name)
 
     draggable_texts = [name for (name, _) in task["options"]]
     for i, text in enumerate(draggable_texts):
@@ -813,8 +830,8 @@ def task_3_3():
               text=f"<-- {name}").place(x=0, y=option_config["hint_y"])
 
     def check_result():
-        if (len(valid_puzzles) == len(task["options"])):
-            increase_score()
+        frames["3_3"].after(
+            100, lambda: show_message(len(valid_options) == len(task["options"])))
 
     check_result_button = Button(
         frames["3_3"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
@@ -833,4 +850,5 @@ def task_3_3():
 if __name__ == "__main__":
     left_panel_ui()
     landing(frm_landing)
+
     window.mainloop()
