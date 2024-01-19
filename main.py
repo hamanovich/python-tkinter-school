@@ -154,8 +154,9 @@ def left_panel_ui():
         "bg"), fg="black", font=font.Font(size=10))
     lbl_copyrights.grid(row=0, column=0)
 
-    Label(window, text=f"{score}/{total_tasks}",
-          font=CONFIG["font_size"]["heading"], bg=CONFIG["bg"], fg="black").place(x=10, y=950)
+    lbl_score = Label(window, text=f"{score}/{total_tasks}",
+                      font=CONFIG["font_size"]["heading"], bg=CONFIG["bg"], fg="black")
+    lbl_score.place(x=10, y=950)
 
     # TODO: Add Sunflower image
     # tk_image = PhotoImage(file=resource_path("images/sunflower.png"))
@@ -229,12 +230,12 @@ def landing(frame):
     for idx, (slug, name, frm_img) in enumerate(data.menu_buttons):
         frm = Frame(frame, borderwidth=2, relief=GROOVE, cursor="hand2")
         frm.grid(row=1, column=idx, padx=10, pady=10)
-        image = PhotoImage(file=resource_path(frm_img))
+        image = PhotoImage(file=frm_img)
         lbl_image = Label(frm, image=image)
         lbl_image.image = image
         lbl_image.grid(row=0, column=0)
-        lbl_image.bind("<Button-1>", lambda _,
-                       slug=slug, name=name: choose_topic(slug, name))
+        lbl_image.bind("<Button-1>", lambda _, slug=slug,
+                       name=name: choose_topic(slug, name))
         lbl_text = Label(frm, text=name)
         lbl_text.grid(row=1, column=0)
         lbl_text.bind("<Button-1>", lambda _,
@@ -271,6 +272,20 @@ def landing_result():
     get_page_title(frames["result"], "Вы выполнили все задания.")
     Label(frames["result"], bg=CONFIG["bg"], fg="black", wraplength=600,
           text=f"Ваш результат: {score}/{total_tasks}", font=CONFIG["font_size"]["title"]).grid(row=1, column=0)
+    # TODO: Add if > 6 success, less 5 -> bad
+
+
+def make_frame(frame_id, row):
+    frame = Frame(frames[frame_id], bg=CONFIG["bg"])
+    frame.grid(row=row, column=0)
+    return frame
+
+
+def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
+    check_result_button = Button(
+        frame_id, text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=command)
+    check_result_button.grid(
+        row=row, column=0, columnspan=columnspan, pady=pady, sticky=EW)
 
 
 def task_1_1():
@@ -279,8 +294,7 @@ def task_1_1():
 
     get_page_title(frames["1_1"], task["name"])
 
-    frm_options = Frame(frames["1_1"], bg=CONFIG["bg"])
-    frm_options.grid(row=1, column=0)
+    frm_options = make_frame("1_1", 1)
 
     for i, option in enumerate(task["options"]):
         lbl_option = Label(frm_options, anchor=W, wraplength=750,
@@ -290,17 +304,16 @@ def task_1_1():
                            text=f"{option[0]}. {option[1]}")
         lbl_option.grid(row=i, column=0)
 
-    frm_task = Frame(frames["1_1"], bg=CONFIG["bg"])
-    frm_task.grid(row=2, column=0, pady=20)
+    frm_task = make_frame("1_1", 2)
 
     row_entries = []
 
     for i in range(len(task["answer"])):
         var = StringVar()
         var.trace_add("write", lambda *args, var=var: check_only_digit(var))
-        entry = Entry(frm_task, bg="white", fg="black", font=font.Font(size=48), width=2, highlightthickness=1,
+        entry = Entry(frm_task, bg="white", fg="black", font=CONFIG["font_size"]["heading"], width=2, highlightthickness=1,
                       highlightbackground="white", bd=2, justify="center", relief=SOLID, textvariable=var)
-        entry.grid(row=3, column=i)
+        entry.grid(row=3, column=i, pady=15)
         row_entries.append(entry)
 
         def check_task():
@@ -315,9 +328,7 @@ def task_1_1():
             frames["1_1"].after(
                 100, lambda: show_message(result == task["answer"]))
 
-    check_result_button = Button(
-        frames["1_1"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_task)
-    check_result_button.grid(row=4, column=0, pady=10, sticky=EW)
+    make_check_result_button(frames["1_1"], check_task, 4)
 
 
 def task_1_2():
@@ -343,7 +354,7 @@ def task_1_2():
     crossword_answers = []
     crossword_keyword = []
 
-    def check_crossword():
+    def check_task():
         valid = True
         for i, crossword_answer in enumerate(crossword_answers):
             result = ""
@@ -386,9 +397,7 @@ def task_1_2():
 
         crossword_answers.append(row_entries)
 
-    check_result_button = Button(
-        frames["1_2"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_crossword)
-    check_result_button.grid(row=20, column=0, pady=10, sticky=EW)
+    make_check_result_button(frames["1_2"], check_task, 20)
 
 
 def task_1_3():
@@ -445,7 +454,7 @@ def task_1_3():
         lbl.place(x=randint(100, 350), y=randint(100, 350))
         draggable_lbls.append(lbl)
 
-    def check_result():
+    def check_task():
         for el in draggable_lbls:
             if (el.cget("text") in valid_options):
                 el.config(bg="green")
@@ -455,9 +464,7 @@ def task_1_3():
         frames["1_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
 
-    check_result_button = Button(
-        frames["1_3"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
-    check_result_button.grid(row=20, column=0, pady=10, sticky=EW)
+    make_check_result_button(frames["1_3"], check_task, 20)
 
 
 def task_2_1():
@@ -498,7 +505,7 @@ def task_2_1():
                         command=lambda i=idx: task_2_1_btn_click(i))
         button.grid(row=0, column=1, padx=(5, 0), sticky=EW)
 
-    def check_result():
+    def check_task():
         result = entry_answer.get()
         formatted_result = ''.join(result.split())
 
@@ -510,9 +517,7 @@ def task_2_1():
         frames["2_1"].after(
             100, lambda: show_message(formatted_result == task["answer"]))
 
-    check_result_button = Button(
-        frames["2_1"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
-    check_result_button.grid(row=10, column=0, pady=10, sticky=EW)
+    make_check_result_button(frames["2_1"], check_task, 10)
 
 
 def task_2_2():
@@ -552,7 +557,7 @@ def task_2_2():
         elif match_lbl in valid_options:
             valid_options.remove(match_lbl)
 
-    def check_result():
+    def check_task():
         valid_element_names = [lbl.cget("text") for lbl in valid_options]
         for el in all_options:
             if (el.cget("text") in valid_element_names):
@@ -570,9 +575,7 @@ def task_2_2():
         draggable_label.place(x=5, y=50 + idx * 25)
         draggable_labels.append(draggable_label)
 
-    check_result_button = Button(
-        frames["2_2"], text="Проверить результат", font=CONFIG["font_size"]["title"], command=check_result)
-    check_result_button.grid(row=2, column=0, pady=10, sticky=EW)
+    make_check_result_button(frames["2_2"], check_task, 2)
 
     link_label = Label(
         frames["2_2"], text="Узнать больше на Youtube.com", bg="#333", fg=CONFIG["bg"], cursor="hand2")
@@ -629,7 +632,7 @@ def task_2_3():
         elif match_lbl in valid_options:
             valid_options.remove(match_lbl)
 
-    def check_result():
+    def check_task():
         valid_element_names = [lbl.cget("text") for lbl in valid_options]
         for el in all_options:
             if (el.cget("text") in valid_element_names):
@@ -647,9 +650,7 @@ def task_2_3():
         draggable_label.place(x=randint(10, 400), y=randint(275, 400))
         draggable_labels.append(draggable_label)
 
-    check_result_button = Button(
-        frames["2_3"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
-    check_result_button.grid(row=3, column=0, pady=(50, 0), sticky=EW)
+    make_check_result_button(frames["2_3"], check_task, 3)
 
     link_label = Label(
         frames["2_3"], text="Узнать больше на Youtube.com", bg="#333", fg=CONFIG["bg"], cursor="hand2")
@@ -713,7 +714,7 @@ def task_3_1():
         lbl.place(x=randint(10, 310), y=randint(465, 590))
         draggable_lbls.append(lbl)
 
-    def check_result():
+    def check_task():
         for el in draggable_lbls:
             if (el.cget("text") in valid_options):
                 el.config(bg="green")
@@ -723,9 +724,7 @@ def task_3_1():
         frames["3_1"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
 
-    check_button = Button(frames["3_1"], text="Проверить результат", font=font.Font(
-        size=20), cursor="hand2", command=check_result)
-    check_button.grid(row=2, column=0, pady=20, sticky=EW)
+    make_check_result_button(frames["3_1"], check_task, 2)
 
 
 def task_3_2():
@@ -734,7 +733,7 @@ def task_3_2():
 
     get_page_title(frames["3_2"], task["name"], columnspan=4)
 
-    def check_result():
+    def check_task():
         correct_answers = 0
         for _, correct, var, label in task["options"]:
             if var.get() == correct:
@@ -763,10 +762,8 @@ def task_3_2():
         task["options"][i] = (
             name, correct_answer, var, label)
 
-    check_button = Button(frames["3_2"], text="Проверить результат", font=font.Font(
-        size=20), cursor="hand2", command=check_result)
-    check_button.grid(row=i+2, column=0, pady=50, sticky=EW,
-                      columnspan=4)
+    make_check_result_button(
+        frames["3_2"], check_task, i+2, pady=50, columnspan=4)
 
 
 def task_3_3():
@@ -829,13 +826,11 @@ def task_3_3():
         Label(frm_tips, bg="white", fg="black",
               text=f"<-- {name}").place(x=0, y=option_config["hint_y"])
 
-    def check_result():
+    def check_task():
         frames["3_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
 
-    check_result_button = Button(
-        frames["3_3"], text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=check_result)
-    check_result_button.grid(row=3, column=0, pady=50, sticky=EW)
+    make_check_result_button(frames["3_3"], check_task, 3)
 
     def show_tips():
         frm_tips.grid()
