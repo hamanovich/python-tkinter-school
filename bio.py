@@ -7,7 +7,9 @@ from random import randint
 from tkinter import *
 from tkinter import font, messagebox
 from PIL import Image as PilImage, ImageTk
+from music_player import MusicPlayer
 
+from config import CONFIG
 from utils import *
 from draggable import DraggableWidget
 
@@ -43,18 +45,6 @@ window.option_add("*Entry.foreground", "black")
 window.option_add("*Canvas.background", "white")
 window.option_add("*Frame.background", "white")
 
-CONFIG = {
-    "bg": {
-        "main": "lightgreen",
-        "ok": "green",
-        "error": "red"
-    },
-    "font_size": {
-        "heading": font.Font(size=38),
-        "title": font.Font(size=20),
-        "text": font.Font(size=16)
-    }
-}
 
 frames = {}
 frame_ids = ["botanika", "anatomy", "cytology", "1_1", "1_2", "1_3",
@@ -63,8 +53,27 @@ tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
          "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "landing_result"]
 
 total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
-active_task_number = 4
+active_task_number = 3
 score = 0
+
+global_images = []
+
+
+def make_image(frame, img_path, width, height, **kwargs):
+    img = PilImage.open(img_path)
+    img_tk = ImageTk.PhotoImage(img)
+    global_images.append(img_tk)
+    img_canvas = Canvas(frame,
+                        width=width,
+                        height=height,
+                        bg=kwargs["bg"] if "bg" in kwargs else CONFIG["bg"]["main"],
+                        highlightthickness=0)
+    img_canvas.create_image(0, 0, anchor=NW, image=img_tk)
+
+    if "x" in kwargs and "y" in kwargs:
+        img_canvas.place(x=kwargs["x"], y=kwargs["y"])
+    else:
+        img_canvas.grid(row=kwargs["row"] if "row" in kwargs else 0)
 
 
 def choose_topic(slug, name):
@@ -92,7 +101,7 @@ def choose_topic(slug, name):
                           text="🏠",
                           cursor="hand2",
                           highlightbackground=CONFIG["bg"]["main"],
-                          font=CONFIG["font_size"]["title"],
+                          font=font.Font(size=CONFIG["font_size"]["title"]),
                           command=go_home)
         btn_home.grid(row=5, pady=5, sticky=EW)
 
@@ -150,7 +159,7 @@ def left_panel_ui():
                           text=name,
                           cursor="hand2",
                           highlightbackground=CONFIG["bg"]["main"],
-                          font=CONFIG["font_size"]["title"],
+                          font=font.Font(size=CONFIG["font_size"]["title"]),
                           command=lambda slug=slug, name=name: choose_topic(slug, name))
         btn_menu.grid(row=idx, pady=5, sticky=EW)
         menu_btns.append(btn_menu)
@@ -162,24 +171,22 @@ def left_panel_ui():
 
     lbl_copyrights = Label(frm_copyrights, text=data.copyrights,
                            bg=CONFIG["bg"]["main"], font=font.Font(size=10))
-    lbl_copyrights.grid(row=0)
+    lbl_copyrights.grid()
 
     lbl_score = Label(window, text=f"{score}/{total_tasks}",
-                      font=CONFIG["font_size"]["heading"], bg=CONFIG["bg"]["main"])
+                      font=font.Font(size=CONFIG["font_size"]["heading"]), bg=CONFIG["bg"]["main"])
     lbl_score.place(x=10, y=900)
 
-    # TODO: Add Sunflower image
-    # tk_image = PhotoImage(file=resource_path("images/sunflower.png"))
-    # lbl_image = Label(frm_panel, image=tk_image, bg=CONFIG["bg"]["main"])
-    # lbl_image.image = tk_image
-    # lbl_image.grid(row=10)
+    MusicPlayer(window).make_button()
+
+    make_image(window, "images/sunflower.png", 125, 142, x=10, y=250)
 
 
 frm_main = Frame(bg=CONFIG["bg"]["main"])
 frm_main.grid(row=0, column=1, sticky=NSEW)
 frm_main.columnconfigure(0, weight=1)
 lbl_main = Label(frm_main, text=TITLE, bg=CONFIG["bg"]["main"],
-                 font=CONFIG["font_size"]["heading"], anchor=CENTER)
+                 font=font.Font(size=CONFIG["font_size"]["heading"]), anchor=CENTER)
 lbl_main.grid(row=0, columnspan=3, pady=(20, 20), sticky=EW)
 frm_content = Frame(frm_main, padx=5, pady=5, bg=CONFIG["bg"]["main"])
 frm_content.grid(row=1)
@@ -224,14 +231,14 @@ def show_message(success):
 def get_page_title(frame, text, columnspan=1):
     Label(frame, anchor=W, wraplength=600,
           bg=CONFIG["bg"]["main"],
-          font=CONFIG["font_size"]["title"],
+          font=font.Font(size=CONFIG["font_size"]["title"]),
           text=text).grid(row=0, pady=(0, 15), columnspan=columnspan)
 
 
 def landing(frame):
     lbl_landing = Label(frame,
                         text="Выберите раздел",
-                        font=CONFIG["font_size"]["title"],
+                        font=font.Font(size=CONFIG["font_size"]["title"]),
                         bg=CONFIG["bg"]["main"])
     lbl_landing.grid(row=0, pady=(0, 10), columnspan=4)
 
@@ -256,26 +263,17 @@ def landing(frame):
 
 
 def landing_by_topic(topic_name):
-    global preview_img
-    frames[topic_name].grid()
     info = data.content[topic_name]
+    frames[topic_name].grid()
 
     get_page_title(frames[topic_name], info["intro"])
 
     for i, detail in enumerate(info["details"]):
         Label(frames[topic_name], bg=CONFIG["bg"]["main"], wraplength=600,
-              text=detail, font=CONFIG["font_size"]["text"]).grid(row=i+1, pady=(0, 10))
+              text=detail, font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+1, pady=(0, 10))
 
-    canvas = Canvas(frames[topic_name],
-                    width=info["preview"]["width"],
-                    height=info["preview"]["height"],
-                    highlightthickness=0)
-    canvas.grid(row=5)
-
-    img = PilImage.open(info["preview"]["img_path"])
-    preview_img = ImageTk.PhotoImage(img)
-    canvas.create_image(0, 0, anchor=NW, image=preview_img)
-
+    make_image(frames[topic_name], info["preview"]["img_path"],
+               info["preview"]["width"], info["preview"]["height"], row=5)
     make_link(frames[topic_name], info, 6)
 
 
@@ -283,8 +281,14 @@ def landing_result():
     frames["result"].grid()
     get_page_title(frames["result"], "Вы выполнили все задания.")
     Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
-          text=f"Ваш результат: {score}/{total_tasks}", font=CONFIG["font_size"]["title"]).grid(row=1)
+          text=f"Ваш результат: {score}/{total_tasks}", font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=1)
     # TODO: Add if > 6 success, less 5 -> bad
+
+
+def clear_frame_content(frame):
+    frame.grid_remove()
+    for widget in frame.winfo_children():
+        widget.destroy()
 
 
 def make_frame(frame_id, row, pady=0):
@@ -297,7 +301,7 @@ def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
     Button(
         frame_id,
         text="Проверить результат",
-        font=CONFIG["font_size"]["title"],
+        font=font.Font(size=CONFIG["font_size"]["title"]),
         cursor="hand2",
         highlightthickness=0,
         bd=1,
@@ -329,14 +333,14 @@ def task_1_1():
               anchor=W,
               wraplength=750,
               bg=CONFIG["bg"]["main"],
-              font=CONFIG["font_size"]["text"],
+              font=font.Font(size=CONFIG["font_size"]["text"]),
               text=f"{option[0]}. {option[1]}").grid(row=i)
 
     for i in range(len(task["answer"])):
         var = StringVar()
         var.trace_add("write", lambda *args, var=var: check_only_digit(var))
         entry = Entry(frm_task,
-                      font=CONFIG["font_size"]["heading"],
+                      font=font.Font(size=CONFIG["font_size"]["heading"]),
                       width=2,
                       highlightthickness=1,
                       highlightbackground="white",
@@ -432,7 +436,6 @@ def task_1_2():
 
 
 def task_1_3():
-    global botanika_photo_1_3_0
     global botanika_photos
 
     lbl_main.config(text=data.menu_buttons[0][1])
@@ -447,12 +450,6 @@ def task_1_3():
                         bd=0)
     frm_wrapper.grid(row=1)
 
-    canvas = Canvas(frm_wrapper,
-                    width=650,
-                    height=650,
-                    highlightthickness=0)
-    canvas.grid()
-
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     botanika_photos = [
         ImageTk.PhotoImage(PilImage.open(img_path))
@@ -461,14 +458,12 @@ def task_1_3():
 
     draggable_texts = [name for (name, _) in task["options"]]
 
-    img0 = PilImage.open(task["bg"])
-    botanika_photo_1_3_0 = ImageTk.PhotoImage(img0)
-    canvas.create_image(0, 0, anchor=NW, image=botanika_photo_1_3_0)
+    make_image(frm_wrapper, task["bg"], 650, 650, bg="white")
 
     valid_options = []
 
     def check_position(name, x, y):
-        diff = 25
+        diff = 35
         xx, yy = find_coordinates(task["options"], name)
 
         if (abs(xx - x) < diff and abs(yy - y) < diff):
@@ -504,15 +499,14 @@ def task_1_3():
 
 
 def task_2_1():
-    global entry_answer
-
     lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][0]
     frames["2_1"].grid()
 
     get_page_title(frames["2_1"], task["name"])
 
-    entry_answer = Entry(frames["2_1"], font=CONFIG["font_size"]["title"])
+    entry_answer = Entry(frames["2_1"], font=font.Font(
+        size=CONFIG["font_size"]["title"]))
     entry_answer.grid(row=1, pady=10, sticky=EW)
 
     def btn_click(index):
@@ -528,7 +522,7 @@ def task_2_1():
         row_frame.columnconfigure(1, weight=1)
 
         label = Label(row_frame, text=f"{idx}.",
-                      font=CONFIG["font_size"]["text"])
+                      font=font.Font(size=CONFIG["font_size"]["text"]))
         label.grid(row=0, sticky="w")
 
         button = Button(row_frame,
@@ -538,7 +532,7 @@ def task_2_1():
                         bg="white",
                         fg="black",
                         borderwidth=0,
-                        font=CONFIG["font_size"]["text"],
+                        font=font.Font(size=CONFIG["font_size"]["text"]),
                         command=lambda i=idx: btn_click(i))
         button.grid(row=0, column=1, padx=(5, 0), sticky=EW)
 
@@ -557,7 +551,6 @@ def task_2_1():
 
 
 def task_2_2():
-    global anatomy_photo_2_2_0
     lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][1]
     frames["2_2"].grid()
@@ -569,17 +562,8 @@ def task_2_2():
                         width=650,
                         bd=0)
     frm_wrapper.grid(row=1)
-    frm_wrapper.grid_propagate(0)
 
-    canvas = Canvas(frm_wrapper,
-                    width=650,
-                    height=650,
-                    highlightthickness=0)
-    canvas.grid(row=0)
-
-    img0 = PilImage.open(task["bg"])
-    anatomy_photo_2_2_0 = ImageTk.PhotoImage(img0)
-    canvas.create_image(0, 0, anchor=NW, image=anatomy_photo_2_2_0)
+    make_image(frm_wrapper, task["bg"], 650, 650)
 
     all_options = []
     valid_options = []
@@ -682,7 +666,7 @@ def task_2_3():
             container,
             cursor="hand2",
             relief=SOLID,
-            font=CONFIG["font_size"]["title"],
+            font=font.Font(size=CONFIG["font_size"]["title"]),
             width=2,
             pady=3,
             padx=3,
@@ -697,7 +681,6 @@ def task_2_3():
 
 
 def task_3_1():
-    global cytology_photo_3_1_0
     global cytology_photos
 
     lbl_main.config(text=data.menu_buttons[2][1])
@@ -709,13 +692,8 @@ def task_3_1():
 
     frm_wrapper = Frame(frames["3_1"], height=750, width=464, bd=0)
     frm_wrapper.grid(row=1)
-    frm_wrapper.grid_propagate(0)
 
-    canvas = Canvas(frm_wrapper,
-                    width=464,
-                    height=750,
-                    highlightthickness=0)
-    canvas.grid(row=0)
+    make_image(frm_wrapper, task["bg"], 464, 750, bg="white")
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     cytology_photos = [
@@ -724,10 +702,6 @@ def task_3_1():
     ]
 
     draggable_texts = [name for (name, _) in task["options"]]
-
-    img0 = PilImage.open(task["bg"])
-    cytology_photo_3_1_0 = ImageTk.PhotoImage(img0)
-    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_1_0)
 
     valid_options = []
 
@@ -792,7 +766,7 @@ def task_3_2():
     for i, (name, correct_answer) in enumerate(task["options"]):
         var = StringVar(value="")
         label = Label(frames["3_2"], text=name,
-                      font=CONFIG["font_size"]["text"], bg=CONFIG["bg"]["main"])
+                      font=font.Font(size=CONFIG["font_size"]["text"]), bg=CONFIG["bg"]["main"])
         label.grid(row=i+1)
 
         for j, choice in enumerate(choice_values):
@@ -809,7 +783,6 @@ def task_3_2():
 
 
 def task_3_3():
-    global cytology_photo_3_3_1
     global cytology_photos
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][2]
@@ -825,17 +798,10 @@ def task_3_3():
     frm_tips.grid(row=0, column=2, sticky=E)
     frm_tips.grid_remove()
 
-    canvas = Canvas(frm_wrapper,
-                    width=414,
-                    height=508,
-                    highlightthickness=0)
-    canvas.grid(row=0)
+    make_image(frm_wrapper, task["bg"], 414, 508, bg="white")
+
     frm_wrapper.grid_columnconfigure(1, weight=1)
     frm_wrapper.grid_columnconfigure(2, weight=1)
-
-    img1 = PilImage.open(task["bg"])
-    cytology_photo_3_3_1 = ImageTk.PhotoImage(img1)
-    canvas.create_image(0, 0, anchor=NW, image=cytology_photo_3_3_1)
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     cytology_photos = [
@@ -884,7 +850,6 @@ def task_3_3():
         "bg"), cursor="hand2",  command=show_tips)
     btn_tip.grid()
 
-print(__name__)
 
 if __name__ == "__main__":
     left_panel_ui()

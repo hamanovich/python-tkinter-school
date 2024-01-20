@@ -27,7 +27,4 @@ def get_value(key, options):
             return category
 
 
-def clear_frame_content(frame):
-    frame.grid_remove()
-    for widget in frame.winfo_children():
-        widget.destroy()
+
