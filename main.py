@@ -304,13 +304,15 @@ def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
         pady=10,
         command=command).grid(row=row, columnspan=columnspan, pady=pady, sticky=EW)
 
+
 def make_link(frame_id, task, row):
     link_label = Label(
         frame_id, text=task["meta"]["link_text"], padx=5, pady=3, font=font.Font(underline=True), cursor="hand2")
     link_label.grid(row=row, pady=10)
     link_label.bind(
         "<Button-1>", lambda _: webbrowser.open(task["meta"]["link"]))
-    
+
+
 def task_1_1():
     row_entries = []
     task = data.content["botanika"]["tasks"][0]
@@ -390,10 +392,10 @@ def task_1_2():
                 else:
                     entry.config(bg=CONFIG["bg"]["ok"], fg="white")
 
-        keyword = "".join(char.get() for char in keyword)
+        word = "".join(char.get() for char in keyword)
 
         frames["1_2"].after(
-            100, lambda: show_message(keyword == task["answer"] and valid))
+            100, lambda: show_message(word == task["answer"] and valid))
 
     for row, option in enumerate(task["options"]):
         for i in range(0, option["padLeft"]):
