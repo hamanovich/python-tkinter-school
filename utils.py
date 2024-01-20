@@ -26,8 +26,6 @@ def get_value(key, options):
         if element == key:
             return category
 
-# Tkinter utils
-
 
 def clear_frame_content(frame):
     frame.grid_remove()

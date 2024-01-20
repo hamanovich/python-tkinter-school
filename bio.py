@@ -884,6 +884,7 @@ def task_3_3():
         "bg"), cursor="hand2",  command=show_tips)
     btn_tip.grid()
 
+print(__name__)
 
 if __name__ == "__main__":
     left_panel_ui()
