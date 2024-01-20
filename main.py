@@ -36,8 +36,19 @@ window.title(TITLE)
 window.rowconfigure(0, minsize=1000, weight=1)
 window.columnconfigure(1, minsize=800, weight=1)
 
+window.option_add("*Label.background", "white")
+window.option_add("*Label.foreground", "black")
+window.option_add("*Entry.background", "white")
+window.option_add("*Entry.foreground", "black")
+window.option_add("*Canvas.background", "white")
+window.option_add("*Frame.background", "white")
+
 CONFIG = {
-    "bg": "lightgreen",
+    "bg": {
+        "main": "lightgreen",
+        "ok": "green",
+        "error": "red"
+    },
     "font_size": {
         "heading": font.Font(size=38),
         "title": font.Font(size=20),
@@ -52,7 +63,7 @@ tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
          "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "landing_result"]
 
 total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
-active_task_number = 0
+active_task_number = 4
 score = 0
 
 
@@ -61,14 +72,12 @@ def choose_topic(slug, name):
     global btn_home
     global score
     for btn in menu_btns:
-        btn.config(highlightbackground=CONFIG["bg"], fg="black")
+        btn.config(highlightbackground=CONFIG["bg"]["main"], fg="black")
     btn_index = [index for index, (slug_name, _, _) in enumerate(
         data.menu_buttons) if slug_name == slug]
 
     btn = menu_btns[btn_index[0]]
-    btn.config(highlightbackground="green", fg="green")
-
-    lbl_main.config(text=name)
+    btn.config(highlightbackground=CONFIG["bg"]["ok"], fg=CONFIG["bg"]["ok"])
 
     frm_landing.grid_remove()
     for frame_id in frame_ids:
@@ -76,15 +85,16 @@ def choose_topic(slug, name):
 
     landing_by_topic(slug)
     reset_score()
+    lbl_main.config(text=name)
 
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
                           text="🏠",
                           cursor="hand2",
-                          highlightbackground=CONFIG["bg"],
+                          highlightbackground=CONFIG["bg"]["main"],
                           font=CONFIG["font_size"]["title"],
                           command=go_home)
-        btn_home.grid(row=5, column=0, pady=5, sticky=EW)
+        btn_home.grid(row=5, pady=5, sticky=EW)
 
     active_task_number = 0
     score = 0
@@ -113,7 +123,7 @@ def go_home():
     btn_home = None
 
     for btn in menu_btns:
-        btn.config(highlightbackground=CONFIG["bg"], fg="black")
+        btn.config(highlightbackground=CONFIG["bg"]["main"], fg="black")
 
 
 def left_panel_ui():
@@ -123,15 +133,15 @@ def left_panel_ui():
     global frm_menu_buttons
     global lbl_score
     global score
-    frm_panel = Frame(window, bg=CONFIG["bg"], relief=RAISED, bd=2)
-    frm_panel.grid(row=0, column=0, sticky=NSEW)
+    frm_panel = Frame(window, bg=CONFIG["bg"]["main"], relief=RAISED, bd=2)
+    frm_panel.grid(row=0, sticky=NSEW)
     frm_panel.rowconfigure(2, weight=1)
 
     lbl_panel = Label(frm_panel, text="Выберите раздел:",
-                      bg=CONFIG["bg"], fg="black")
-    lbl_panel.grid(row=0, column=0, padx=5, pady=1)
-    frm_menu_buttons = Frame(frm_panel, bg=CONFIG["bg"])
-    frm_menu_buttons.grid(row=1, column=0, padx=10)
+                      bg=CONFIG["bg"]["main"])
+    lbl_panel.grid(row=0, padx=5, pady=1)
+    frm_menu_buttons = Frame(frm_panel, bg=CONFIG["bg"]["main"])
+    frm_menu_buttons.grid(row=1, padx=10)
 
     menu_btns = []
 
@@ -139,46 +149,46 @@ def left_panel_ui():
         btn_menu = Button(frm_menu_buttons,
                           text=name,
                           cursor="hand2",
-                          highlightbackground=frm_panel.cget("bg"),
+                          highlightbackground=CONFIG["bg"]["main"],
                           font=CONFIG["font_size"]["title"],
                           command=lambda slug=slug, name=name: choose_topic(slug, name))
-        btn_menu.grid(row=idx, column=0, pady=5, sticky=EW)
+        btn_menu.grid(row=idx, pady=5, sticky=EW)
         menu_btns.append(btn_menu)
 
     btn_home = None
 
-    frm_copyrights = Frame(frm_panel, bg=frm_panel.cget("bg"))
-    frm_copyrights.grid(row=2, column=0, sticky=N)
+    frm_copyrights = Frame(frm_panel, bg=CONFIG["bg"]["main"])
+    frm_copyrights.grid(row=2, sticky=N)
 
-    lbl_copyrights = Label(frm_copyrights, text=data.copyrights, bg=frm_panel.cget(
-        "bg"), fg="black", font=font.Font(size=10))
-    lbl_copyrights.grid(row=0, column=0)
+    lbl_copyrights = Label(frm_copyrights, text=data.copyrights,
+                           bg=CONFIG["bg"]["main"], font=font.Font(size=10))
+    lbl_copyrights.grid(row=0)
 
     lbl_score = Label(window, text=f"{score}/{total_tasks}",
-                      font=CONFIG["font_size"]["heading"], bg=CONFIG["bg"], fg="black")
-    lbl_score.place(x=10, y=950)
+                      font=CONFIG["font_size"]["heading"], bg=CONFIG["bg"]["main"])
+    lbl_score.place(x=10, y=900)
 
     # TODO: Add Sunflower image
     # tk_image = PhotoImage(file=resource_path("images/sunflower.png"))
-    # lbl_image = Label(frm_panel, image=tk_image, bg=CONFIG["bg"])
+    # lbl_image = Label(frm_panel, image=tk_image, bg=CONFIG["bg"]["main"])
     # lbl_image.image = tk_image
-    # lbl_image.grid(row=10, column=0)
+    # lbl_image.grid(row=10)
 
 
-frm_main = Frame(bg=CONFIG["bg"])
+frm_main = Frame(bg=CONFIG["bg"]["main"])
 frm_main.grid(row=0, column=1, sticky=NSEW)
 frm_main.columnconfigure(0, weight=1)
-lbl_main = Label(frm_main, text=TITLE, bg=CONFIG["bg"], fg="black",
-                 font=CONFIG["font_size"]["heading"], anchor="center")
-lbl_main.grid(row=0, column=0, columnspan=3, pady=(20, 20), sticky=EW)
-frm_content = Frame(frm_main, padx=5, pady=5, bg=CONFIG["bg"])
-frm_content.grid(row=1, column=0)
-frm_landing = Frame(frm_content, bg=CONFIG["bg"])
-frm_landing.grid(row=0, column=0)
+lbl_main = Label(frm_main, text=TITLE, bg=CONFIG["bg"]["main"],
+                 font=CONFIG["font_size"]["heading"], anchor=CENTER)
+lbl_main.grid(row=0, columnspan=3, pady=(20, 20), sticky=EW)
+frm_content = Frame(frm_main, padx=5, pady=5, bg=CONFIG["bg"]["main"])
+frm_content.grid(row=1)
+frm_landing = Frame(frm_content, bg=CONFIG["bg"]["main"])
+frm_landing.grid(row=0)
 
 for frame_id in frame_ids:
-    frame = Frame(frm_content, bg=CONFIG["bg"])
-    frame.grid(row=0, column=0)
+    frame = Frame(frm_content, bg=CONFIG["bg"]["main"])
+    frame.grid(row=0)
     frames[frame_id] = frame
 
 
@@ -213,19 +223,17 @@ def show_message(success):
 
 def get_page_title(frame, text, columnspan=1):
     Label(frame, anchor=W, wraplength=600,
-          bg=CONFIG["bg"],
-          fg="black",
+          bg=CONFIG["bg"]["main"],
           font=CONFIG["font_size"]["title"],
-          text=text).grid(row=0, column=0, pady=(0, 15), columnspan=columnspan)
+          text=text).grid(row=0, pady=(0, 15), columnspan=columnspan)
 
 
 def landing(frame):
     lbl_landing = Label(frame,
                         text="Выберите раздел",
                         font=CONFIG["font_size"]["title"],
-                        bg=CONFIG["bg"],
-                        fg="black")
-    lbl_landing.grid(row=0, column=0, pady=(0, 10), columnspan=4)
+                        bg=CONFIG["bg"]["main"])
+    lbl_landing.grid(row=0, pady=(0, 10), columnspan=4)
 
     for idx, (slug, name, frm_img) in enumerate(data.menu_buttons):
         frm = Frame(frame, borderwidth=2, relief=GROOVE, cursor="hand2")
@@ -233,17 +241,17 @@ def landing(frame):
         image = PhotoImage(file=frm_img)
         lbl_image = Label(frm, image=image)
         lbl_image.image = image
-        lbl_image.grid(row=0, column=0)
+        lbl_image.grid(row=0)
         lbl_image.bind("<Button-1>", lambda _, slug=slug,
                        name=name: choose_topic(slug, name))
         lbl_text = Label(frm, text=name)
-        lbl_text.grid(row=1, column=0)
+        lbl_text.grid(row=1)
         lbl_text.bind("<Button-1>", lambda _,
                       slug=slug, name=name: choose_topic(slug, name))
 
     lbl_start = Label(frame, text="Начать путешествие", font=font.Font(size=32), anchor=CENTER,
-                      cursor="hand2", bg="darkblue", borderwidth=2, relief=GROOVE, height=6, justify=CENTER)
-    lbl_start.grid(row=2, column=0, columnspan=4, padx=10, pady=50, sticky=EW)
+                      cursor="hand2", bg="darkblue", fg="white", borderwidth=2, relief=GROOVE, height=6, justify=CENTER)
+    lbl_start.grid(row=2, columnspan=4, padx=10, pady=50, sticky=EW)
     lbl_start.bind("<Button-1>", lambda _: start_game())
 
 
@@ -255,147 +263,168 @@ def landing_by_topic(topic_name):
     get_page_title(frames[topic_name], info["intro"])
 
     for i, detail in enumerate(info["details"]):
-        Label(frames[topic_name], bg=CONFIG["bg"], fg="black", wraplength=600,
-              text=detail, font=CONFIG["font_size"]["text"]).grid(row=i+1, column=0, pady=(0, 10))
+        Label(frames[topic_name], bg=CONFIG["bg"]["main"], wraplength=600,
+              text=detail, font=CONFIG["font_size"]["text"]).grid(row=i+1, pady=(0, 10))
 
-    canvas = Canvas(frames[topic_name], width=info["preview"]["width"], height=info["preview"]["height"],
-                    bg="white", highlightthickness=0)
-    canvas.grid(row=5, column=0)
+    canvas = Canvas(frames[topic_name],
+                    width=info["preview"]["width"],
+                    height=info["preview"]["height"],
+                    highlightthickness=0)
+    canvas.grid(row=5)
 
     img = PilImage.open(info["preview"]["img_path"])
     preview_img = ImageTk.PhotoImage(img)
     canvas.create_image(0, 0, anchor=NW, image=preview_img)
 
+    make_link(frames[topic_name], info, 6)
+
 
 def landing_result():
     frames["result"].grid()
     get_page_title(frames["result"], "Вы выполнили все задания.")
-    Label(frames["result"], bg=CONFIG["bg"], fg="black", wraplength=600,
-          text=f"Ваш результат: {score}/{total_tasks}", font=CONFIG["font_size"]["title"]).grid(row=1, column=0)
+    Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
+          text=f"Ваш результат: {score}/{total_tasks}", font=CONFIG["font_size"]["title"]).grid(row=1)
     # TODO: Add if > 6 success, less 5 -> bad
 
 
-def make_frame(frame_id, row):
-    frame = Frame(frames[frame_id], bg=CONFIG["bg"])
-    frame.grid(row=row, column=0)
+def make_frame(frame_id, row, pady=0):
+    frame = Frame(frames[frame_id], bg=CONFIG["bg"]["main"])
+    frame.grid(row=row, pady=pady)
     return frame
 
 
 def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
-    check_result_button = Button(
-        frame_id, text="Проверить результат", font=CONFIG["font_size"]["title"], cursor="hand2", command=command)
-    check_result_button.grid(
-        row=row, column=0, columnspan=columnspan, pady=pady, sticky=EW)
+    Button(
+        frame_id,
+        text="Проверить результат",
+        font=CONFIG["font_size"]["title"],
+        cursor="hand2",
+        highlightthickness=0,
+        bd=1,
+        pady=10,
+        command=command).grid(row=row, columnspan=columnspan, pady=pady, sticky=EW)
 
-
+def make_link(frame_id, task, row):
+    link_label = Label(
+        frame_id, text=task["meta"]["link_text"], padx=5, pady=3, font=font.Font(underline=True), cursor="hand2")
+    link_label.grid(row=row, pady=10)
+    link_label.bind(
+        "<Button-1>", lambda _: webbrowser.open(task["meta"]["link"]))
+    
 def task_1_1():
+    row_entries = []
     task = data.content["botanika"]["tasks"][0]
+    lbl_main.config(text=data.menu_buttons[0][1])
     frames["1_1"].grid()
 
     get_page_title(frames["1_1"], task["name"])
 
     frm_options = make_frame("1_1", 1)
-
-    for i, option in enumerate(task["options"]):
-        lbl_option = Label(frm_options, anchor=W, wraplength=750,
-                           bg=CONFIG["bg"],
-                           fg="black",
-                           font=CONFIG["font_size"]["text"],
-                           text=f"{option[0]}. {option[1]}")
-        lbl_option.grid(row=i, column=0)
-
     frm_task = make_frame("1_1", 2)
 
-    row_entries = []
+    for i, option in enumerate(task["options"]):
+        Label(frm_options,
+              anchor=W,
+              wraplength=750,
+              bg=CONFIG["bg"]["main"],
+              font=CONFIG["font_size"]["text"],
+              text=f"{option[0]}. {option[1]}").grid(row=i)
 
     for i in range(len(task["answer"])):
         var = StringVar()
         var.trace_add("write", lambda *args, var=var: check_only_digit(var))
-        entry = Entry(frm_task, bg="white", fg="black", font=CONFIG["font_size"]["heading"], width=2, highlightthickness=1,
-                      highlightbackground="white", bd=2, justify="center", relief=SOLID, textvariable=var)
+        entry = Entry(frm_task,
+                      font=CONFIG["font_size"]["heading"],
+                      width=2,
+                      highlightthickness=1,
+                      highlightbackground="white",
+                      bd=2,
+                      justify="center",
+                      relief=SOLID,
+                      textvariable=var)
         entry.grid(row=3, column=i, pady=15)
         row_entries.append(entry)
 
-        def check_task():
-            result = ""
-            for i, variant in enumerate(row_entries):
-                result += variant.get()
-                if (variant.get() != task["answer"][i]):
-                    variant.config(bg="red", fg="white")
-                else:
-                    variant.config(bg="green", fg="white")
+    def check_task():
+        result = ""
+        for i, variant in enumerate(row_entries):
+            result += variant.get()
+            variant.config(bg=CONFIG["bg"]["ok"] if variant.get(
+            ) == task["answer"][i] else CONFIG["bg"]["error"], fg="white")
 
-            frames["1_1"].after(
-                100, lambda: show_message(result == task["answer"]))
+        frames["1_1"].after(
+            100, lambda: show_message(result == task["answer"]))
 
     make_check_result_button(frames["1_1"], check_task, 4)
 
 
 def task_1_2():
+    answers = []
+    keyword = []
     task = data.content["botanika"]["tasks"][1]
+    lbl_main.config(text=data.menu_buttons[0][1])
     frames["1_2"].grid()
 
     get_page_title(frames["1_2"], task["name"])
 
-    frm_crossword_questions = Frame(frames["1_2"], bg=CONFIG["bg"])
-    frm_crossword_questions.grid(row=1, column=0)
+    frm_options = make_frame("1_2", 1)
+    frm_crossword = make_frame("1_2", 2, 20)
 
     for i, option in enumerate(task["options"]):
-        lbl_crossword_question = Label(frm_crossword_questions, anchor=W, wraplength=750,
-                                       bg=CONFIG["bg"],
-                                       fg="black",
-                                       width=75,
-                                       text=f"{i+1}. {option["question"]}")
-        lbl_crossword_question.grid(row=i, column=0)
-
-    frm_crossword = Frame(frames["1_2"], bg=CONFIG["bg"])
-    frm_crossword.grid(row=2, column=0, pady=20)
-
-    crossword_answers = []
-    crossword_keyword = []
+        Label(frm_options,
+              anchor=W,
+              wraplength=750,
+              bg=CONFIG["bg"]["main"],
+              width=75,
+              text=f"{i+1}. {option["question"]}").grid(row=i)
 
     def check_task():
         valid = True
-        for i, crossword_answer in enumerate(crossword_answers):
+        for i, crossword_answer in enumerate(answers):
             result = ""
             for k, entry in enumerate(crossword_answer):
                 result += entry.get()
                 if (entry.get() != task["options"][i]["answer"][k]):
-                    entry.config(bg="red", fg="white")
+                    entry.config(bg=CONFIG["bg"]["error"], fg="white")
                     valid = False
                 else:
-                    entry.config(bg="green", fg="white")
+                    entry.config(bg=CONFIG["bg"]["ok"], fg="white")
 
-        keyword = ""
-        for char in crossword_keyword:
-            keyword += char.get()
+        keyword = "".join(char.get() for char in keyword)
 
         frames["1_2"].after(
             100, lambda: show_message(keyword == task["answer"] and valid))
 
     for row, option in enumerate(task["options"]):
         for i in range(0, option["padLeft"]):
-            label = Label(frm_crossword, width=2, bg=frm_panel.cget("bg"))
-            label.grid(row=row+3, column=i)
+            Label(frm_crossword, width=2, bg=CONFIG["bg"]["main"]).grid(
+                row=row+3, column=i)
 
-        label = Label(frm_crossword, width=2, text=row+1, bg="white",
-                      fg="black", bd=1, highlightthickness=1, relief=SOLID)
-        label.grid(row=row+2, column=option["padLeft"])
+        Label(frm_crossword, width=2, text=row+1,
+              bd=1, highlightthickness=1, relief=SOLID).grid(row=row+2, column=option["padLeft"])
 
         row_entries = []
 
-        for i in range(option["padLeft"]+1, option["padLeft"]+1 + len(option["answer"])):
+        for i in range(option["padLeft"] + 1, option["padLeft"] + 1 + len(option["answer"])):
             var = StringVar()
             var.trace_add("write", lambda *args,
                           var=var: check_only_letter(var))
-            entry = Entry(frm_crossword, bg="yellow" if i == 8 else "white", fg="black",
-                          width=2, highlightthickness=1, highlightbackground="white", bd=1, justify="center", relief=SOLID, textvariable=var)
+            entry = Entry(frm_crossword,
+                          bg="yellow" if i == 8 else "white",
+                          width=2,
+                          highlightthickness=1,
+                          highlightbackground="white",
+                          bd=1,
+                          justify="center",
+                          relief=SOLID,
+                          textvariable=var)
             entry.grid(row=row+2, column=i)
             row_entries.append(entry)
-            if (i == 7):
-                crossword_keyword.append(entry)
 
-        crossword_answers.append(row_entries)
+            if (i == 7):
+                keyword.append(entry)
+
+        answers.append(row_entries)
 
     make_check_result_button(frames["1_2"], check_task, 20)
 
@@ -403,20 +432,24 @@ def task_1_2():
 def task_1_3():
     global botanika_photo_1_3_0
     global botanika_photos
-    task = data.content["botanika"]["tasks"][2]
 
+    lbl_main.config(text=data.menu_buttons[0][1])
+    task = data.content["botanika"]["tasks"][2]
     frames["1_3"].grid()
 
     get_page_title(frames["1_3"], task["name"])
 
     frm_wrapper = Frame(frames["1_3"],
-                        bg="white", height=650, width=650, bd=0)
-    frm_wrapper.grid(row=1, column=0)
-    frm_wrapper.grid_propagate(0)
+                        height=650,
+                        width=650,
+                        bd=0)
+    frm_wrapper.grid(row=1)
 
-    canvas = Canvas(frm_wrapper, width=650, height=650,
-                    bg="white", highlightthickness=0)
-    canvas.grid(row=0, column=0)
+    canvas = Canvas(frm_wrapper,
+                    width=650,
+                    height=650,
+                    highlightthickness=0)
+    canvas.grid()
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     botanika_photos = [
@@ -446,8 +479,11 @@ def task_1_3():
     draggable_lbls = []
     for i, text in enumerate(draggable_texts):
         lbl = DraggableWidget(
-            frm_wrapper, cursor="hand2", bd=1, text=text,
-            bg="white", relief=SOLID,
+            frm_wrapper,
+            cursor="hand2",
+            bd=1,
+            text=text,
+            relief=SOLID,
             image=botanika_photos[i],
             on_release_callback=check_position
         )
@@ -456,10 +492,8 @@ def task_1_3():
 
     def check_task():
         for el in draggable_lbls:
-            if (el.cget("text") in valid_options):
-                el.config(bg="green")
-            else:
-                el.config(bg="red")
+            el.config(bg=CONFIG["bg"]["ok"] if el.cget(
+                "text") in valid_options else CONFIG["bg"]["error"])
 
         frames["1_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
@@ -469,16 +503,17 @@ def task_1_3():
 
 def task_2_1():
     global entry_answer
+
+    lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][0]
     frames["2_1"].grid()
 
     get_page_title(frames["2_1"], task["name"])
 
-    entry_answer = Entry(frames["2_1"], bg="white",
-                         fg="black", font=CONFIG["font_size"]["title"])
-    entry_answer.grid(row=1, column=0, pady=10, sticky=EW)
+    entry_answer = Entry(frames["2_1"], font=CONFIG["font_size"]["title"])
+    entry_answer.grid(row=1, pady=10, sticky=EW)
 
-    def task_2_1_btn_click(index):
+    def btn_click(index):
         current_text = entry_answer.get()
         updated_text = f"{current_text} {index}"
         entry_answer.config(bg="white", fg="black")
@@ -486,13 +521,13 @@ def task_2_1():
         entry_answer.insert(0, updated_text)
 
     for (idx, option) in task["options"]:
-        row_frame = Frame(frames["2_1"], bg="white")
-        row_frame.grid(row=idx+1, column=0, sticky=EW)
+        row_frame = Frame(frames["2_1"])
+        row_frame.grid(row=idx+1, sticky=EW)
         row_frame.columnconfigure(1, weight=1)
 
-        label = Label(row_frame, text=f"{idx}.", bg="white",
-                      fg="black", font=font.Font(size=18))
-        label.grid(row=0, column=0, sticky="w")
+        label = Label(row_frame, text=f"{idx}.",
+                      font=CONFIG["font_size"]["text"])
+        label.grid(row=0, sticky="w")
 
         button = Button(row_frame,
                         text=option,
@@ -501,40 +536,44 @@ def task_2_1():
                         bg="white",
                         fg="black",
                         borderwidth=0,
-                        font=font.Font(size=16),
-                        command=lambda i=idx: task_2_1_btn_click(i))
+                        font=CONFIG["font_size"]["text"],
+                        command=lambda i=idx: btn_click(i))
         button.grid(row=0, column=1, padx=(5, 0), sticky=EW)
 
     def check_task():
         result = entry_answer.get()
         formatted_result = ''.join(result.split())
+        is_ok = formatted_result == task["answer"]
 
-        if formatted_result == task["answer"]:
-            entry_answer.config(bg="green", fg="white")
-        else:
-            entry_answer.config(bg="red", fg="white")
+        entry_answer.config(
+            bg=CONFIG["bg"]["ok"] if is_ok else CONFIG["bg"]["error"], fg="white")
 
         frames["2_1"].after(
-            100, lambda: show_message(formatted_result == task["answer"]))
+            100, lambda: show_message(is_ok))
 
     make_check_result_button(frames["2_1"], check_task, 10)
 
 
 def task_2_2():
     global anatomy_photo_2_2_0
+    lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][1]
     frames["2_2"].grid()
 
     get_page_title(frames["2_2"], task["name"])
 
     frm_wrapper = Frame(frames["2_2"],
-                        bg="white", height=650, width=650, bd=0)
-    frm_wrapper.grid(row=1, column=0)
+                        height=650,
+                        width=650,
+                        bd=0)
+    frm_wrapper.grid(row=1)
     frm_wrapper.grid_propagate(0)
 
-    canvas = Canvas(frm_wrapper, width=650, height=650,
-                    bg="white", highlightthickness=0)
-    canvas.grid(row=0, column=0)
+    canvas = Canvas(frm_wrapper,
+                    width=650,
+                    height=650,
+                    highlightthickness=0)
+    canvas.grid(row=0)
 
     img0 = PilImage.open(task["bg"])
     anatomy_photo_2_2_0 = ImageTk.PhotoImage(img0)
@@ -545,7 +584,6 @@ def task_2_2():
 
     def check_position(name, x, y):
         diff = 30
-        print(name, x, y)
         match_option = [option for (
             n, option) in task["options"] if n == name][0]
         match_lbl = [
@@ -560,10 +598,8 @@ def task_2_2():
     def check_task():
         valid_element_names = [lbl.cget("text") for lbl in valid_options]
         for el in all_options:
-            if (el.cget("text") in valid_element_names):
-                el.config(bg="green")
-            else:
-                el.config(bg="red")
+            el.config(bg=CONFIG["bg"]["ok"] if el.cget(
+                "text") in valid_element_names else CONFIG["bg"]["error"])
 
         frames["2_2"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
@@ -571,20 +607,16 @@ def task_2_2():
     draggable_labels = []
     for idx, (name, _) in enumerate(task["options"]):
         draggable_label = DraggableWidget(
-            frames["2_2"], cursor="hand2", relief=SOLID, bd=1, bg="white", fg="black", text=name, on_release_callback=check_position)
+            frames["2_2"], cursor="hand2", relief=SOLID, bd=1, text=name, on_release_callback=check_position)
         draggable_label.place(x=5, y=50 + idx * 25)
         draggable_labels.append(draggable_label)
 
     make_check_result_button(frames["2_2"], check_task, 2)
-
-    link_label = Label(
-        frames["2_2"], text="Узнать больше на Youtube.com", bg="#333", fg=CONFIG["bg"], cursor="hand2")
-    link_label.grid(row=3, column=0, pady=10)
-    link_label.bind(
-        "<Button-1>", lambda _: webbrowser.open(task["meta"]["youtube"]))
+    make_link(frames["2_2"], task, 3)
 
 
 def task_2_3():
+    lbl_main.config(text=data.menu_buttons[1][1])
     frames["2_3"].grid()
 
     task = data.content["anatomy"]["tasks"][2]
@@ -597,21 +629,22 @@ def task_2_3():
     frames["2_3"].grid_columnconfigure(0, weight=1)
     frames["2_3"].update_idletasks()
 
-    frame1 = Frame(container, bg="white", bd=3, highlightthickness=5,
+    frame1 = Frame(container, bd=3, highlightthickness=5,
                    highlightbackground="white", relief=SOLID, height=250)
-    frame2 = Frame(container, bg="white", bd=3, highlightthickness=5,
+    frame2 = Frame(container, bd=3, highlightthickness=5,
                    highlightbackground="white", relief=SOLID, height=250)
-    frame3 = Frame(container, bg="white", bd=0, highlightthickness=0,
+    frame3 = Frame(container, bd=0, highlightthickness=0,
                    highlightbackground="white", height=250)
 
-    frame1.grid(row=1, column=0, sticky=EW)
+    frame1.grid(row=1, sticky=EW)
     frame2.grid(row=1, column=1, sticky=EW)
-    frame3.grid(row=2, column=0, columnspan=2, sticky=EW)
+    frame3.grid(row=2, columnspan=2, sticky=EW)
 
-    Label(container, relief=SOLID, bd=1, bg="white",
-          fg="black", text="Микроэлементы").place(x=55, y=10)
-    Label(container, relief=SOLID, bd=1, bg="white",
-          fg="black", text="Макроэлементы").place(x=280, y=10)
+    for (element, coords) in task["elements"]:
+        Label(container,
+              relief=SOLID,
+              bd=1,
+              text=element).place(x=coords["x"], y=coords["y"])
 
     container.grid_rowconfigure(1, weight=1)
     container.grid_columnconfigure(0, weight=1)
@@ -635,10 +668,8 @@ def task_2_3():
     def check_task():
         valid_element_names = [lbl.cget("text") for lbl in valid_options]
         for el in all_options:
-            if (el.cget("text") in valid_element_names):
-                el.config(bg="green")
-            else:
-                el.config(bg="red")
+            el.config(bg=CONFIG["bg"]["ok"] if el.cget(
+                "text") in valid_element_names else CONFIG["bg"]["error"])
 
         frames["2_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
@@ -646,37 +677,43 @@ def task_2_3():
     draggable_labels = []
     for (name, _) in task["options"]:
         draggable_label = DraggableWidget(
-            container, cursor="hand2", relief=SOLID, font=CONFIG["font_size"]["title"], width=2, bd=1, bg="white", fg="black", text=name, on_release_callback=check_position)
+            container,
+            cursor="hand2",
+            relief=SOLID,
+            font=CONFIG["font_size"]["title"],
+            width=2,
+            pady=3,
+            padx=3,
+            bd=1,
+            text=name,
+            on_release_callback=check_position)
         draggable_label.place(x=randint(10, 400), y=randint(275, 400))
         draggable_labels.append(draggable_label)
 
     make_check_result_button(frames["2_3"], check_task, 3)
-
-    link_label = Label(
-        frames["2_3"], text="Узнать больше на Youtube.com", bg="#333", fg=CONFIG["bg"], cursor="hand2")
-    link_label.grid(row=4, column=0, pady=10)
-    link_label.bind(
-        "<Button-1>", lambda _: webbrowser.open(task["meta"]["youtube"]))
+    make_link(frames["2_3"], task, 4)
 
 
 def task_3_1():
     global cytology_photo_3_1_0
     global cytology_photos
 
+    lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][0]
 
     frames["3_1"].grid()
 
     get_page_title(frames["3_1"], task["name"])
 
-    frm_wrapper = Frame(frames["3_1"],
-                        bg="white", height=750, width=464, bd=0)
-    frm_wrapper.grid(row=1, column=0)
+    frm_wrapper = Frame(frames["3_1"], height=750, width=464, bd=0)
+    frm_wrapper.grid(row=1)
     frm_wrapper.grid_propagate(0)
 
-    canvas = Canvas(frm_wrapper, width=464, height=750,
-                    bg="white", highlightthickness=0)
-    canvas.grid(row=0, column=0)
+    canvas = Canvas(frm_wrapper,
+                    width=464,
+                    height=750,
+                    highlightthickness=0)
+    canvas.grid(row=0)
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     cytology_photos = [
@@ -706,8 +743,12 @@ def task_3_1():
     draggable_lbls = []
     for i, text in enumerate(draggable_texts):
         lbl = DraggableWidget(
-            frm_wrapper, cursor="hand2", bd=1, text=text,
-            bg=CONFIG["bg"], relief=SOLID,
+            frm_wrapper,
+            cursor="hand2",
+            bd=1,
+            text=text,
+            bg=CONFIG["bg"]["main"],
+            relief=SOLID,
             image=cytology_photos[i],
             on_release_callback=check_position
         )
@@ -716,10 +757,8 @@ def task_3_1():
 
     def check_task():
         for el in draggable_lbls:
-            if (el.cget("text") in valid_options):
-                el.config(bg="green")
-            else:
-                el.config(bg="red")
+            el.config(bg=CONFIG["bg"]["ok"] if el.cget(
+                "text") in valid_options else CONFIG["bg"]["error"])
 
         frames["3_1"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
@@ -728,6 +767,7 @@ def task_3_1():
 
 
 def task_3_2():
+    lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][1]
     frames["3_2"].grid()
 
@@ -737,10 +777,10 @@ def task_3_2():
         correct_answers = 0
         for _, correct, var, label in task["options"]:
             if var.get() == correct:
-                label.config(bg="green", fg="white")
+                label.config(bg=CONFIG["bg"]["ok"], fg="white")
                 correct_answers += 1
             else:
-                label.config(bg="red", fg="white")
+                label.config(bg=CONFIG["bg"]["error"], fg="white")
 
         frames["3_2"].after(
             100, lambda: show_message(correct_answers == len(task["options"])))
@@ -749,12 +789,12 @@ def task_3_2():
 
     for i, (name, correct_answer) in enumerate(task["options"]):
         var = StringVar(value="")
-        label = Label(frames["3_2"], text=name, font=font.Font(size=16), bg=CONFIG["bg"],
-                      fg="black")
-        label.grid(row=i+1, column=0)
+        label = Label(frames["3_2"], text=name,
+                      font=CONFIG["font_size"]["text"], bg=CONFIG["bg"]["main"])
+        label.grid(row=i+1)
 
         for j, choice in enumerate(choice_values):
-            rad_button = Radiobutton(frames["3_2"], text=choice, variable=var, value=choice, bg=CONFIG["bg"],
+            rad_button = Radiobutton(frames["3_2"], text=choice, variable=var, value=choice, bg=CONFIG["bg"]["main"],
                                      fg="black")
             rad_button.grid(row=i+1, column=j+1)
 
@@ -769,24 +809,25 @@ def task_3_2():
 def task_3_3():
     global cytology_photo_3_3_1
     global cytology_photos
+    lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][2]
     frames["3_3"].grid()
 
     get_page_title(frames["3_3"], task["name"])
 
-    frm_wrapper = Frame(frames["3_3"], bg="white", height=508,
-                        width=700, bd=0)
-    frm_wrapper.grid(row=1, column=0)
+    frm_wrapper = Frame(frames["3_3"], height=508, width=700, bd=0)
+    frm_wrapper.grid(row=1)
     frm_wrapper.grid_propagate(0)
 
-    frm_tips = Frame(frm_wrapper,
-                     bg="white", highlightthickness=0, width=125, height=508)
+    frm_tips = Frame(frm_wrapper, highlightthickness=0, width=125, height=508)
     frm_tips.grid(row=0, column=2, sticky=E)
     frm_tips.grid_remove()
 
-    canvas = Canvas(frm_wrapper, width=414, height=508,
-                    bg="white", highlightthickness=0)
-    canvas.grid(row=0, column=0)
+    canvas = Canvas(frm_wrapper,
+                    width=414,
+                    height=508,
+                    highlightthickness=0)
+    canvas.grid(row=0)
     frm_wrapper.grid_columnconfigure(1, weight=1)
     frm_wrapper.grid_columnconfigure(2, weight=1)
 
@@ -823,8 +864,8 @@ def task_3_3():
         lbl.place(x=randint(20, 160), y=randint(70, 260))
 
     for (name, option_config) in task["options"]:
-        Label(frm_tips, bg="white", fg="black",
-              text=f"<-- {name}").place(x=0, y=option_config["hint_y"])
+        Label(frm_tips, text=f"<-- {name}").place(x=0,
+                                                  y=option_config["hint_y"])
 
     def check_task():
         frames["3_3"].after(
@@ -845,5 +886,4 @@ def task_3_3():
 if __name__ == "__main__":
     left_panel_ui()
     landing(frm_landing)
-
     window.mainloop()
