@@ -1,5 +1,4 @@
 import data
-import webbrowser
 import sys
 import os
 
@@ -21,22 +20,13 @@ def resource_path(relative_path):
     return os.path.join(base_path, relative_path)
 
 
-TITLE = data.project_title
-
-
 window = Tk()
-window_width = 1000
-window_height = 1000
-screen_width = window.winfo_screenwidth()
-screen_height = window.winfo_screenheight()
-x_position = (screen_width - window_width) // 2
-y_position = (screen_height - window_height) // 2
-
-window.geometry(f"{window_width}x{window_height}+{x_position}+{y_position}")
+window.geometry(f"{CONFIG["window"]["width"]}x{
+                CONFIG["window"]["height"]}+{(window.winfo_screenwidth() - CONFIG["window"]["width"]) // 2}+{(window.winfo_screenheight() - CONFIG["window"]["height"]) // 2}")
 window.resizable(0, 0)
-window.title(TITLE)
-window.rowconfigure(0, minsize=1000, weight=1)
-window.columnconfigure(1, minsize=800, weight=1)
+window.title(data.project_title)
+window.rowconfigure(0, minsize=CONFIG["window"]["width"], weight=1)
+window.columnconfigure(1, minsize=CONFIG["window"]["height"]-200, weight=1)
 
 window.option_add("*Label.background", "white")
 window.option_add("*Label.foreground", "black")
@@ -46,7 +36,6 @@ window.option_add("*Canvas.background", "white")
 window.option_add("*Frame.background", "white")
 
 
-frames = {}
 frame_ids = ["botanika", "anatomy", "cytology", "1_1", "1_2", "1_3",
              "2_1", "2_2", "2_3", "3_1", "3_2", "3_3", "result"]
 tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
@@ -55,25 +44,6 @@ tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
 total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
 active_task_number = 3
 score = 0
-
-global_images = []
-
-
-def make_image(frame, img_path, width, height, **kwargs):
-    img = PilImage.open(img_path)
-    img_tk = ImageTk.PhotoImage(img)
-    global_images.append(img_tk)
-    img_canvas = Canvas(frame,
-                        width=width,
-                        height=height,
-                        bg=kwargs["bg"] if "bg" in kwargs else CONFIG["bg"]["main"],
-                        highlightthickness=0)
-    img_canvas.create_image(0, 0, anchor=NW, image=img_tk)
-
-    if "x" in kwargs and "y" in kwargs:
-        img_canvas.place(x=kwargs["x"], y=kwargs["y"])
-    else:
-        img_canvas.grid(row=kwargs["row"] if "row" in kwargs else 0)
 
 
 def choose_topic(slug, name):
@@ -128,7 +98,7 @@ def go_home():
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
     clear_frame_content(btn_home)
-    lbl_main.config(text=TITLE)
+    lbl_main.config(text=data.project_title)
     btn_home = None
 
     for btn in menu_btns:
@@ -185,7 +155,7 @@ def left_panel_ui():
 frm_main = Frame(bg=CONFIG["bg"]["main"])
 frm_main.grid(row=0, column=1, sticky=NSEW)
 frm_main.columnconfigure(0, weight=1)
-lbl_main = Label(frm_main, text=TITLE, bg=CONFIG["bg"]["main"],
+lbl_main = Label(frm_main, text=data.project_title, bg=CONFIG["bg"]["main"],
                  font=font.Font(size=CONFIG["font_size"]["heading"]), anchor=CENTER)
 lbl_main.grid(row=0, columnspan=3, pady=(20, 20), sticky=EW)
 frm_content = Frame(frm_main, padx=5, pady=5, bg=CONFIG["bg"]["main"])
@@ -228,13 +198,6 @@ def show_message(success):
     next_task()
 
 
-def get_page_title(frame, text, columnspan=1):
-    Label(frame, anchor=W, wraplength=600,
-          bg=CONFIG["bg"]["main"],
-          font=font.Font(size=CONFIG["font_size"]["title"]),
-          text=text).grid(row=0, pady=(0, 15), columnspan=columnspan)
-
-
 def landing(frame):
     lbl_landing = Label(frame,
                         text="Выберите раздел",
@@ -273,7 +236,7 @@ def landing_by_topic(topic_name):
               text=detail, font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+1, pady=(0, 10))
 
     make_image(frames[topic_name], info["preview"]["img_path"],
-               info["preview"]["width"], info["preview"]["height"], row=5)
+               info["preview"]["width"], info["preview"]["height"], row=5, bg="white")
     make_link(frames[topic_name], info, 6)
 
 
@@ -283,38 +246,6 @@ def landing_result():
     Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
           text=f"Ваш результат: {score}/{total_tasks}", font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=1)
     # TODO: Add if > 6 success, less 5 -> bad
-
-
-def clear_frame_content(frame):
-    frame.grid_remove()
-    for widget in frame.winfo_children():
-        widget.destroy()
-
-
-def make_frame(frame_id, row, pady=0):
-    frame = Frame(frames[frame_id], bg=CONFIG["bg"]["main"])
-    frame.grid(row=row, pady=pady)
-    return frame
-
-
-def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
-    Button(
-        frame_id,
-        text="Проверить результат",
-        font=font.Font(size=CONFIG["font_size"]["title"]),
-        cursor="hand2",
-        highlightthickness=0,
-        bd=1,
-        pady=10,
-        command=command).grid(row=row, columnspan=columnspan, pady=pady, sticky=EW)
-
-
-def make_link(frame_id, task, row):
-    link_label = Label(
-        frame_id, text=task["meta"]["link_text"], padx=5, pady=3, font=font.Font(underline=True), cursor="hand2")
-    link_label.grid(row=row, pady=10)
-    link_label.bind(
-        "<Button-1>", lambda _: webbrowser.open(task["meta"]["link"]))
 
 
 def task_1_1():

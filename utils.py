@@ -1,3 +1,11 @@
+import webbrowser
+
+from config import CONFIG
+from tkinter import *
+from tkinter import font
+from PIL import Image as PilImage, ImageTk
+
+
 def check_only_digit(var):
     value = var.get()
     if len(value) > 1:
@@ -27,4 +35,63 @@ def get_value(key, options):
             return category
 
 
+global_images = []
 
+
+def make_image(frame, img_path, width, height, **kwargs):
+    img = PilImage.open(img_path)
+    img_tk = ImageTk.PhotoImage(img)
+    global_images.append(img_tk)
+    img_canvas = Canvas(frame,
+                        width=width,
+                        height=height,
+                        bg=kwargs["bg"] if "bg" in kwargs else CONFIG["bg"]["main"],
+                        highlightthickness=0)
+    img_canvas.create_image(0, 0, anchor=NW, image=img_tk)
+
+    if "x" in kwargs and "y" in kwargs:
+        img_canvas.place(x=kwargs["x"], y=kwargs["y"])
+    else:
+        img_canvas.grid(row=kwargs["row"] if "row" in kwargs else 0)
+
+
+def get_page_title(frame, text, columnspan=1):
+    Label(frame, anchor=W, wraplength=600,
+          bg=CONFIG["bg"]["main"],
+          font=font.Font(size=CONFIG["font_size"]["title"]),
+          text=text).grid(row=0, pady=(0, 15), columnspan=columnspan)
+
+
+def clear_frame_content(frame):
+    frame.grid_remove()
+    for widget in frame.winfo_children():
+        widget.destroy()
+
+
+frames = {}
+
+
+def make_frame(frame_id, row, pady=0):
+    frame = Frame(frames[frame_id], bg=CONFIG["bg"]["main"])
+    frame.grid(row=row, pady=pady)
+    return frame
+
+
+def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
+    Button(
+        frame_id,
+        text="Проверить результат",
+        font=font.Font(size=CONFIG["font_size"]["title"]),
+        cursor="hand2",
+        highlightthickness=0,
+        bd=1,
+        pady=10,
+        command=command).grid(row=row, columnspan=columnspan, pady=pady, sticky=EW)
+
+
+def make_link(frame_id, task, row):
+    link_label = Label(
+        frame_id, text=task["meta"]["link_text"], padx=5, pady=3, font=font.Font(underline=True), cursor="hand2")
+    link_label.grid(row=row, pady=10)
+    link_label.bind(
+        "<Button-1>", lambda _: webbrowser.open(task["meta"]["link"]))
