@@ -45,6 +45,20 @@ total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
 active_task_number = 0
 score = 0
 
+active_audio = None
+
+
+def make_home_btn():
+    global btn_home
+
+    btn_home = Button(frm_menu_buttons,
+                      text="🏠",
+                      cursor="hand2",
+                      highlightbackground=CONFIG["bg"]["main"],
+                      font=font.Font(size=CONFIG["font_size"]["title"]),
+                      command=go_home)
+    btn_home.grid(row=5, pady=5, sticky=EW)
+
 
 def choose_topic(slug, name):
     global active_task_number
@@ -64,17 +78,14 @@ def choose_topic(slug, name):
 
     landing_by_topic(slug)
     reset_score()
+
     lbl_main.config(text=name)
     lbl_score.config(text="")
-    if btn_home is None:
-        btn_home = Button(frm_menu_buttons,
-                          text="🏠",
-                          cursor="hand2",
-                          highlightbackground=CONFIG["bg"]["main"],
-                          font=font.Font(size=CONFIG["font_size"]["title"]),
-                          command=go_home)
-        btn_home.grid(row=5, pady=5, sticky=EW)
 
+    if btn_home is None:
+        make_home_btn()
+
+    active_audio.destroy()
     active_task_number = 0
     score = 0
 
@@ -101,6 +112,8 @@ def go_home():
     lbl_main.config(text=data.project_title)
     btn_home = None
     lbl_score.config(text="")
+
+    active_audio.destroy()
 
     for btn in menu_btns:
         btn.config(highlightbackground=CONFIG["bg"]["main"], fg="black")
@@ -146,9 +159,7 @@ def left_panel_ui():
                       font=font.Font(size=CONFIG["font_size"]["heading"]), bg=CONFIG["bg"]["main"])
     lbl_score.place(x=50, y=400)
 
-    MusicPlayer(window).make_button(x=10, y=950)
-
-    make_image(window, "images/sunflower.png", 125, 142, x=18, y=790)
+    make_image(window, "images/sunflower.png", 125, 142, x=18, y=840)
 
 
 frm_main = Frame(bg=CONFIG["bg"]["main"])
@@ -173,6 +184,7 @@ def start_game():
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
     reset_score()
+    make_home_btn()
     globals()[tasks[active_task_number]]()
 
 
@@ -242,10 +254,11 @@ def landing_by_topic(topic_name):
 
 def landing_result():
     msg_result = ""
-    msg_image_path = ''
+    msg_image_path = ""
+    msg_audio_path = ""
 
     frames["result"].grid()
-    get_page_title(frames["result"], "Игра завершена!")
+    lbl_main.config(text="Игра завершена!")
 
     Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
           text=f"Ваш результат: {score}/{total_tasks}", font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=1)
@@ -253,32 +266,44 @@ def landing_result():
     if (score <= 4):
         msg_result = data.messages["msg_result_less_5"]
         msg_image_path = "images/sunflower_sad.png"
+        msg_audio_path = "audio/msg_result_less_5.mp3"
     if (score > 4 and score < 7):
         msg_result = data.messages["msg_result_5_6"]
         msg_image_path = "images/sunflower_ok.png"
+        msg_audio_path = "audio/msg_result_5_6.mp3"
     if (score >= 7):
         msg_result = data.messages["msg_result_7_8"]
         msg_image_path = "images/sunflower_smile.png"
+        msg_audio_path = "audio/msg_result_7_8.mp3"
     if (score == 9):
         msg_result = data.messages["msg_result_9"]
         msg_image_path = "images/sunflower_smile.png"
+        msg_audio_path = "audio/msg_result_9.mp3"
     if (score == 0):
         msg_result = data.messages["msg_result_0"]
         msg_image_path = "images/sunflower_spoiled.png"
+        msg_audio_path = "audio/msg_result_0.mp3"
 
     Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
           text=msg_result, font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=2, pady=(0, 20))
 
     make_image(frames["result"], msg_image_path, 600, 600, row=3)
 
+    MusicPlayer(frm_main, msg_audio_path, autoplay=True)
+
 
 def task_1_1():
+    global active_audio
     row_entries = []
     task = data.content["botanika"]["tasks"][0]
     lbl_main.config(text=data.menu_buttons[0][1])
     frames["1_1"].grid()
 
     get_page_title(frames["1_1"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_1_1.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     frm_options = make_frame("1_1", 1)
     frm_task = make_frame("1_1", 2)
@@ -315,11 +340,13 @@ def task_1_1():
 
         frames["1_1"].after(
             100, lambda: show_message(result == task["answer"]))
+        task_audio.destroy()
 
     make_check_result_button(frames["1_1"], check_task, 4)
 
 
 def task_1_2():
+    global active_audio
     answers = []
     keyword = []
     task = data.content["botanika"]["tasks"][1]
@@ -327,6 +354,10 @@ def task_1_2():
     frames["1_2"].grid()
 
     get_page_title(frames["1_2"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_1_2.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     frm_options = make_frame("1_2", 1)
     frm_crossword = make_frame("1_2", 2, 20)
@@ -338,23 +369,6 @@ def task_1_2():
               bg=CONFIG["bg"]["main"],
               width=75,
               text=f"{i+1}. {option["question"]}").grid(row=i)
-
-    def check_task():
-        valid = True
-        for i, crossword_answer in enumerate(answers):
-            result = ""
-            for k, entry in enumerate(crossword_answer):
-                result += entry.get()
-                if (entry.get() != task["options"][i]["answer"][k]):
-                    entry.config(bg=CONFIG["bg"]["error"], fg="white")
-                    valid = False
-                else:
-                    entry.config(bg=CONFIG["bg"]["ok"], fg="white")
-
-        word = "".join(char.get() for char in keyword)
-
-        frames["1_2"].after(
-            100, lambda: show_message(word == task["answer"] and valid))
 
     for row, option in enumerate(task["options"]):
         for i in range(0, option["padLeft"]):
@@ -387,17 +401,40 @@ def task_1_2():
 
         answers.append(row_entries)
 
+    def check_task():
+        valid = True
+        for i, crossword_answer in enumerate(answers):
+            result = ""
+            for k, entry in enumerate(crossword_answer):
+                result += entry.get()
+                if (entry.get() != task["options"][i]["answer"][k]):
+                    entry.config(bg=CONFIG["bg"]["error"], fg="white")
+                    valid = False
+                else:
+                    entry.config(bg=CONFIG["bg"]["ok"], fg="white")
+
+        word = "".join(char.get() for char in keyword)
+
+        frames["1_2"].after(
+            100, lambda: show_message(word == task["answer"] and valid))
+        task_audio.destroy()
+
     make_check_result_button(frames["1_2"], check_task, 20)
 
 
 def task_1_3():
     global botanika_photos
+    global active_audio
 
     lbl_main.config(text=data.menu_buttons[0][1])
     task = data.content["botanika"]["tasks"][2]
     frames["1_3"].grid()
 
     get_page_title(frames["1_3"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_1_3.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     frm_wrapper = Frame(frames["1_3"],
                         height=650,
@@ -449,16 +486,22 @@ def task_1_3():
 
         frames["1_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
+        task_audio.destroy()
 
     make_check_result_button(frames["1_3"], check_task, 20)
 
 
 def task_2_1():
+    global active_audio
     lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][0]
     frames["2_1"].grid()
 
     get_page_title(frames["2_1"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_2_1.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     entry_answer = Entry(frames["2_1"], font=font.Font(
         size=CONFIG["font_size"]["title"]))
@@ -501,16 +544,22 @@ def task_2_1():
 
         frames["2_1"].after(
             100, lambda: show_message(is_ok))
+        task_audio.destroy()
 
     make_check_result_button(frames["2_1"], check_task, 10)
 
 
 def task_2_2():
+    global active_audio
     lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][1]
     frames["2_2"].grid()
 
     get_page_title(frames["2_2"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_2_2.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     frm_wrapper = Frame(frames["2_2"],
                         height=650,
@@ -544,6 +593,7 @@ def task_2_2():
 
         frames["2_2"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
+        task_audio.destroy()
 
     draggable_labels = []
     for idx, (name, _) in enumerate(task["options"]):
@@ -557,12 +607,17 @@ def task_2_2():
 
 
 def task_2_3():
+    global active_audio
     lbl_main.config(text=data.menu_buttons[1][1])
     frames["2_3"].grid()
 
     task = data.content["anatomy"]["tasks"][2]
 
     get_page_title(frames["2_3"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_2_3.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     container = Frame(frames["2_3"], height=300)
     container.grid(sticky=EW)
@@ -614,6 +669,7 @@ def task_2_3():
 
         frames["2_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
+        task_audio.destroy()
 
     draggable_labels = []
     for (name, _) in task["options"]:
@@ -637,6 +693,7 @@ def task_2_3():
 
 def task_3_1():
     global cytology_photos
+    global active_audio
 
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][0]
@@ -644,6 +701,10 @@ def task_3_1():
     frames["3_1"].grid()
 
     get_page_title(frames["3_1"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_3_1.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     frm_wrapper = Frame(frames["3_1"], height=750, width=464, bd=0)
     frm_wrapper.grid(row=1)
@@ -663,6 +724,7 @@ def task_3_1():
     def check_position(name, x, y):
         value = get_value(name, task["options"])
 
+        # TODO: Check untouched elements, they may be okay
         if (x > 15 and x < 350 and y > 30 and y < 380 and value["required"] == True
                 or not (x > 15 and x < 350 and y > 30 and y < 380 and value["required"] == False)):
             if (name not in valid_options):
@@ -693,16 +755,22 @@ def task_3_1():
 
         frames["3_1"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
+        task_audio.destroy()
 
     make_check_result_button(frames["3_1"], check_task, 2)
 
 
 def task_3_2():
+    global active_audio
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][1]
     frames["3_2"].grid()
 
     get_page_title(frames["3_2"], task["name"], columnspan=4)
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_3_2.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     def check_task():
         correct_answers = 0
@@ -715,6 +783,7 @@ def task_3_2():
 
         frames["3_2"].after(
             100, lambda: show_message(correct_answers == len(task["options"])))
+        task_audio.destroy()
 
     choice_values = list(set(value for _, value in task["options"]))
 
@@ -739,11 +808,17 @@ def task_3_2():
 
 def task_3_3():
     global cytology_photos
+    global active_audio
+
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][2]
     frames["3_3"].grid()
 
     get_page_title(frames["3_3"], task["name"])
+
+    task_audio = MusicPlayer(frm_main, 'audio/task_3_3.mp3', autoplay=True)
+    task_audio.make_button(x=775, y=10, width=1, button_play="🔇")
+    active_audio = task_audio
 
     frm_wrapper = Frame(frames["3_3"], height=508, width=700, bd=0)
     frm_wrapper.grid(row=1)
@@ -773,6 +848,7 @@ def task_3_3():
         if (abs(xx - x) < diff and abs(yy - y) < diff):
             if (name not in valid_options):
                 valid_options.append(name)
+                # TODO: Make green/red bg color
         else:
             if (name in valid_options):
                 valid_options.remove(name)
@@ -793,6 +869,7 @@ def task_3_3():
     def check_task():
         frames["3_3"].after(
             100, lambda: show_message(len(valid_options) == len(task["options"])))
+        task_audio.destroy()
 
     make_check_result_button(frames["3_3"], check_task, 3)
 
