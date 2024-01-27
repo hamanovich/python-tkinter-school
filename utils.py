@@ -45,14 +45,14 @@ def make_image(frame, img_path, width, height, **kwargs):
     img_canvas = Canvas(frame,
                         width=width,
                         height=height,
-                        bg=kwargs["bg"] if "bg" in kwargs else CONFIG["bg"]["main"],
+                        bg=kwargs.get("bg",  CONFIG["bg"]["main"]),
                         highlightthickness=0)
     img_canvas.create_image(0, 0, anchor=NW, image=img_tk)
 
     if "x" in kwargs and "y" in kwargs:
-        img_canvas.place(x=kwargs["x"], y=kwargs["y"])
+        img_canvas.place(x=kwargs.get("x"), y=kwargs.get("y"))
     else:
-        img_canvas.grid(row=kwargs["row"] if "row" in kwargs else 0)
+        img_canvas.grid(row=kwargs.get("row", 0))
 
 
 def get_page_title(frame, text, columnspan=1):

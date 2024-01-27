@@ -42,7 +42,7 @@ tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
          "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "landing_result"]
 
 total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
-active_task_number = 3
+active_task_number = 0
 score = 0
 
 
@@ -65,7 +65,7 @@ def choose_topic(slug, name):
     landing_by_topic(slug)
     reset_score()
     lbl_main.config(text=name)
-
+    lbl_score.config(text="")
     if btn_home is None:
         btn_home = Button(frm_menu_buttons,
                           text="🏠",
@@ -100,6 +100,7 @@ def go_home():
     clear_frame_content(btn_home)
     lbl_main.config(text=data.project_title)
     btn_home = None
+    lbl_score.config(text="")
 
     for btn in menu_btns:
         btn.config(highlightbackground=CONFIG["bg"]["main"], fg="black")
@@ -112,13 +113,13 @@ def left_panel_ui():
     global frm_menu_buttons
     global lbl_score
     global score
+
     frm_panel = Frame(window, bg=CONFIG["bg"]["main"], relief=RAISED, bd=2)
     frm_panel.grid(row=0, sticky=NSEW)
     frm_panel.rowconfigure(2, weight=1)
 
-    lbl_panel = Label(frm_panel, text="Выберите раздел:",
-                      bg=CONFIG["bg"]["main"])
-    lbl_panel.grid(row=0, padx=5, pady=1)
+    Label(frm_panel, text="Выберите раздел:", bg=CONFIG["bg"]["main"]).grid(
+        row=0, padx=5, pady=(25, 5))
     frm_menu_buttons = Frame(frm_panel, bg=CONFIG["bg"]["main"])
     frm_menu_buttons.grid(row=1, padx=10)
 
@@ -130,26 +131,24 @@ def left_panel_ui():
                           cursor="hand2",
                           highlightbackground=CONFIG["bg"]["main"],
                           font=font.Font(size=CONFIG["font_size"]["title"]),
-                          command=lambda slug=slug, name=name: choose_topic(slug, name))
+                          command=lambda
+                          slug=slug,
+                          name=name: choose_topic(slug, name))
         btn_menu.grid(row=idx, pady=5, sticky=EW)
         menu_btns.append(btn_menu)
 
     btn_home = None
 
-    frm_copyrights = Frame(frm_panel, bg=CONFIG["bg"]["main"])
-    frm_copyrights.grid(row=2, sticky=N)
+    Label(frm_panel, text=data.copyrights,
+          bg=CONFIG["bg"]["main"], font=font.Font(size=10)).grid(row=2, sticky=N)
 
-    lbl_copyrights = Label(frm_copyrights, text=data.copyrights,
-                           bg=CONFIG["bg"]["main"], font=font.Font(size=10))
-    lbl_copyrights.grid()
-
-    lbl_score = Label(window, text=f"{score}/{total_tasks}",
+    lbl_score = Label(window, text="",
                       font=font.Font(size=CONFIG["font_size"]["heading"]), bg=CONFIG["bg"]["main"])
-    lbl_score.place(x=10, y=900)
+    lbl_score.place(x=50, y=400)
 
-    MusicPlayer(window).make_button()
+    MusicPlayer(window).make_button(x=10, y=950)
 
-    make_image(window, "images/sunflower.png", 125, 142, x=10, y=250)
+    make_image(window, "images/sunflower.png", 125, 142, x=18, y=790)
 
 
 frm_main = Frame(bg=CONFIG["bg"]["main"])
@@ -173,6 +172,7 @@ def start_game():
     frm_landing.grid_remove()
     for frame_id in frame_ids:
         clear_frame_content(frames[frame_id])
+    reset_score()
     globals()[tasks[active_task_number]]()
 
 
@@ -219,8 +219,8 @@ def landing(frame):
         lbl_text.bind("<Button-1>", lambda _,
                       slug=slug, name=name: choose_topic(slug, name))
 
-    lbl_start = Label(frame, text="Начать путешествие", font=font.Font(size=32), anchor=CENTER,
-                      cursor="hand2", bg="darkblue", fg="white", borderwidth=2, relief=GROOVE, height=6, justify=CENTER)
+    lbl_start = Label(frame, text="Начать игру", font=font.Font(size=40), anchor=CENTER,
+                      cursor="hand2", bg="darkblue", fg="white", borderwidth=2, relief=GROOVE, height=3, justify=CENTER)
     lbl_start.grid(row=2, columnspan=4, padx=10, pady=50, sticky=EW)
     lbl_start.bind("<Button-1>", lambda _: start_game())
 
@@ -241,11 +241,35 @@ def landing_by_topic(topic_name):
 
 
 def landing_result():
+    msg_result = ""
+    msg_image_path = ''
+
     frames["result"].grid()
-    get_page_title(frames["result"], "Вы выполнили все задания.")
+    get_page_title(frames["result"], "Игра завершена!")
+
     Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
           text=f"Ваш результат: {score}/{total_tasks}", font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=1)
-    # TODO: Add if > 6 success, less 5 -> bad
+
+    if (score <= 4):
+        msg_result = data.messages["msg_result_less_5"]
+        msg_image_path = "images/sunflower_sad.png"
+    if (score > 4 and score < 7):
+        msg_result = data.messages["msg_result_5_6"]
+        msg_image_path = "images/sunflower_ok.png"
+    if (score >= 7):
+        msg_result = data.messages["msg_result_7_8"]
+        msg_image_path = "images/sunflower_smile.png"
+    if (score == 9):
+        msg_result = data.messages["msg_result_9"]
+        msg_image_path = "images/sunflower_smile.png"
+    if (score == 0):
+        msg_result = data.messages["msg_result_0"]
+        msg_image_path = "images/sunflower_spoiled.png"
+
+    Label(frames["result"], bg=CONFIG["bg"]["main"], wraplength=600,
+          text=msg_result, font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=2, pady=(0, 20))
+
+    make_image(frames["result"], msg_image_path, 600, 600, row=3)
 
 
 def task_1_1():
