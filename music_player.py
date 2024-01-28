@@ -9,22 +9,23 @@ class MusicPlayer:
         self.root = root
         mixer.init()
         self.state = 0
+        self.autoplay = kwargs.get("autoplay")
 
         mixer.music.load(audio_file)
 
-        if (kwargs.get("autoplay")):
+        if (self.autoplay):
             mixer.music.play()
             self.state = 1
 
     def make_button(self, **kwargs):
         self.play_button = Button(
             self.root,
-            text=kwargs.get("button_play", "🔉"),
+            text=kwargs.get("button_play", "🔇" if self.autoplay else "🔉"),
             font=font.Font(size=CONFIG["font_size"]["title"]),
             cursor="hand2",
             highlightbackground=CONFIG["bg"]["main"],
             pady=5,
-            width=kwargs.get("width", 8),
+            width=kwargs.get("width", 1),
             command=self.play_music)
         if "x" in kwargs and "y" in kwargs:
             self.play_button.place(x=kwargs.get("x"), y=kwargs.get("y"))
