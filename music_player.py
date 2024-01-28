@@ -48,4 +48,5 @@ class MusicPlayer:
         try:
             self.play_button.destroy()
         except AttributeError:
+            print('atrr error')
             pass

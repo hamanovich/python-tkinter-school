@@ -52,6 +52,13 @@ score = 0
 active_audio = None
 
 
+def task_audio(audio):
+    global active_audio
+    player = MusicPlayer(frm_main, audio, autoplay=True)
+    player.make_button(x=775, y=10)
+    active_audio = player
+
+
 def make_home_btn():
     global btn_home
 
@@ -67,6 +74,10 @@ def choose_topic(slug, name):
     global active_task_number
     global btn_home
     global score
+
+    if active_audio is not None:
+        active_audio.destroy()
+
     for btn in menu_btns:
         btn.config(highlightbackground=CONFIG["bg"]["main"], fg="black")
     btn_index = [index for index, (slug_name, _, _) in enumerate(
@@ -84,9 +95,6 @@ def choose_topic(slug, name):
 
     if btn_home is None:
         make_home_btn()
-
-    if active_audio is not None:
-        active_audio.destroy()
 
 
 def reset_score():
@@ -108,6 +116,7 @@ def increase_score():
 def go_home():
     global btn_home
     global score
+    global active_audio
 
     frm_landing.grid()
     for frame_id in frame_ids:
@@ -118,11 +127,11 @@ def go_home():
     btn_home = None
     lbl_score.config(text="")
 
+    for btn in menu_btns:
+        btn.config(highlightbackground=CONFIG["bg"]["main"], fg="black")
+
     if active_audio is not None:
         active_audio.destroy()
-
-    for btn in menu_btns:
-        btn.config(highlightbackground=CONFIG["bg"]["main"])
 
 
 def left_panel_ui():
@@ -239,7 +248,8 @@ def landing(frame):
         lbl_image.grid()
         lbl_image.bind("<Button-1>", lambda _, slug=slug,
                        name=name: choose_topic(slug, name))
-        Label(frm, text=name).grid(row=1)
+        Label(frm, text=name, font=font.Font(
+            size=CONFIG["font_size"]["text_small"])).grid(row=1)
 
     lbl_start = Label(frame,
                       text="Начать игру",
@@ -260,6 +270,7 @@ def landing_by_topic(topic_name):
     frames[topic_name].grid()
 
     get_page_title(frames[topic_name], info["intro"])
+    task_audio(info["audio"])
 
     for i, detail in enumerate(info["details"]):
         Label(frames[topic_name],
@@ -305,13 +316,6 @@ def landing_result():
     make_image(frames["result"], result["msg_image_path"], 600, 600, row=3)
 
     MusicPlayer(frm_main, result["msg_audio_path"], autoplay=True)
-
-
-def task_audio(audio):
-    global active_audio
-    player = MusicPlayer(frm_main, audio, autoplay=True)
-    player.make_button(x=775, y=10)
-    active_audio = player
 
 
 def task_1_1():
@@ -635,19 +639,26 @@ def task_2_3():
     get_page_title(frames[task_name], task["name"])
     task_audio(task["audio"])
 
-    container = Frame(frames[task_name], height=475, bd=2, relief=SOLID)
+    container = Frame(frames[task_name], width=650,
+                      height=475, bd=1, relief=SOLID)
     container.grid(sticky=EW)
-    container.grid_propagate(0)
+    container.grid_propagate(False)
     frames[task_name].grid_rowconfigure(0, weight=1)
     frames[task_name].grid_columnconfigure(0, weight=1)
     frames[task_name].update_idletasks()
 
-    Frame(container, bd=2, highlightthickness=5,
-          highlightbackground="white", relief=SOLID, height=250).grid(row=1, sticky=EW)
-    Frame(container, bd=2, highlightthickness=5,
-          highlightbackground="white", relief=SOLID, height=250).grid(row=1, column=1, sticky=EW)
-    Frame(container, bd=0, highlightthickness=0,
-          highlightbackground="white", height=250).grid(row=2, columnspan=2, sticky=EW)
+    frame_1 = Frame(container, bd=1, highlightthickness=5,
+                    highlightbackground="white", relief=SOLID, height=250)
+    frame_1.grid(row=1, sticky=EW)
+    frame_1.grid_propagate(False)
+    frame_2 = Frame(container, bd=1, highlightthickness=5,
+                    highlightbackground="white", relief=SOLID, height=250)
+    frame_2.grid(row=1, column=1, sticky=EW)
+    frame_2.grid_propagate(False)
+    frame_3 = Frame(container, bd=0, highlightthickness=0,
+                    highlightbackground="white", height=250)
+    frame_3.grid(row=2, columnspan=2, sticky=EW)
+    frame_3.grid_propagate(False)
 
     for (element, coords) in task["elements"]:
         Label(container,
