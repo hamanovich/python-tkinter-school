@@ -25,7 +25,7 @@ class MusicPlayer:
             cursor="hand2",
             highlightbackground=CONFIG["bg"]["main"],
             pady=5,
-            width=kwargs.get("width", 1),
+            width=kwargs.get("width", 3),
             command=self.play_music)
         if "x" in kwargs and "y" in kwargs:
             self.play_button.place(x=kwargs.get("x"), y=kwargs.get("y"))

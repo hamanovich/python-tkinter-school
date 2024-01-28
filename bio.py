@@ -131,7 +131,11 @@ def left_panel_ui():
     global frm_menu_buttons
     global lbl_score
 
-    frm_panel = Frame(window, bg=CONFIG["bg"]["main"], relief=RAISED, bd=2, width=150)
+    frm_panel = Frame(window,
+                      bg=CONFIG["bg"]["main"],
+                      relief=SOLID,
+                      bd=1,
+                      width=150)
     frm_panel.grid(row=0, column=0, sticky=NSEW)
     frm_panel.grid_propagate(False)
     frm_panel.grid_columnconfigure(0, weight=1)
@@ -165,10 +169,10 @@ def left_panel_ui():
                       bg=CONFIG["bg"]["main"])
     lbl_score.place(x=50, y=400)
 
-    make_image(window, "images/sunflower.png", 125, 142, x=12, y=840)
+    make_image(window, "images/sunflower.png", 125, 142, x=12, y=740)
 
 
-frm_main = Frame(window, bg=CONFIG["bg"]["main"])
+frm_main = Frame(window, bg=CONFIG["bg"]["main"], relief=SOLID, bd=1)
 frm_main.grid(column=1, sticky=NSEW)
 frm_main.columnconfigure(0, weight=1)
 lbl_main = Label(frm_main,
@@ -311,7 +315,6 @@ def task_audio(audio):
 
 
 def task_1_1():
-
     task_name = func_name()
     row_entries = []
     task = data.content["botanika"]["tasks"][0]
@@ -383,15 +386,22 @@ def task_1_2():
               wraplength=750,
               bg=CONFIG["bg"]["main"],
               width=75,
+              font=font.Font(size=CONFIG["font_size"]["text"]),
               text=f"{i+1}. {option["question"]}").grid(row=i)
 
     for row, option in enumerate(task["options"]):
         for i in range(0, option["padLeft"]):
-            Label(frm_crossword, width=2, bg=CONFIG["bg"]["main"]).grid(
-                row=row+3, column=i)
+            Label(frm_crossword,
+                  width=2,
+                  bg=CONFIG["bg"]["main"]).grid(row=row+3, column=i)
 
-        Label(frm_crossword, width=2, text=row+1,
-              bd=1, highlightthickness=1, relief=SOLID).grid(row=row+2, column=option["padLeft"])
+        Label(frm_crossword,
+              width=3,
+              text=row+1,
+              bd=1,
+              background="lightblue",
+              highlightthickness=1,
+              relief=SOLID).grid(row=row+2, column=option["padLeft"])
 
         row_entries = []
 
@@ -401,7 +411,7 @@ def task_1_2():
                           var=var: check_only_letter(var))
             entry = Entry(frm_crossword,
                           bg="yellow" if i == KEYWORD_COLUMN else "white",
-                          width=2,
+                          width=3,
                           bd=1,
                           justify=CENTER,
                           relief=SOLID,
@@ -596,8 +606,8 @@ def task_2_2():
 
     for idx, (name, _) in enumerate(task["options"]):
         draggable_label = DraggableWidget(
-            frames[task_name], cursor="hand2", relief=SOLID, bd=1, text=name, on_release_callback=check_position)
-        draggable_label.place(x=5, y=50 + idx * 25)
+            frm_wrapper, cursor="hand2", relief=SOLID, bd=1, text=name, on_release_callback=check_position)
+        draggable_label.place(x=5, y=5 + idx * 25)
         draggable_labels.append(draggable_label)
 
     def check_task():
@@ -705,10 +715,10 @@ def task_3_1():
     get_page_title(frames[task_name], task["name"])
     task_audio(task["audio"])
 
-    frm_wrapper = Frame(frames[task_name], height=750, width=464, bd=0)
+    frm_wrapper = Frame(frames[task_name], height=680, width=464, bd=0)
     frm_wrapper.grid(row=1)
 
-    make_image(frm_wrapper, task["bg"], 464, 750, bg="white")
+    make_image(frm_wrapper, task["bg"], 464, 680, bg="white")
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     cytology_photos = [
@@ -733,7 +743,7 @@ def task_3_1():
 
     for i, text in enumerate(draggable_texts):
         rand_x = randint(5, 310)
-        rand_y = randint(460, 600)
+        rand_y = randint(460, 550)
         lbl = DraggableWidget(
             frm_wrapper,
             cursor="hand2",
@@ -787,6 +797,8 @@ def task_3_2():
                                      text=choice,
                                      variable=var,
                                      value=choice,
+                                     font=font.Font(
+                                         size=CONFIG["font_size"]["text"]),
                                      bg=CONFIG["bg"]["main"])
             rad_button.grid(row=i+1, column=j+1)
 
