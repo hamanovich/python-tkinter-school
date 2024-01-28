@@ -9,8 +9,8 @@ CONFIG = {
         "error": "red"
     },
     "font_size": {
-        "heading": 38,
-        "title": 20,
-        "text": 16
+        "heading": 30,
+        "title": 18,
+        "text": 14
     }
 }

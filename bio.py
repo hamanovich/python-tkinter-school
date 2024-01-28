@@ -131,14 +131,16 @@ def left_panel_ui():
     global frm_menu_buttons
     global lbl_score
 
-    frm_panel = Frame(window, bg=CONFIG["bg"]["main"], relief=RAISED, bd=2)
-    frm_panel.grid(row=0, sticky=NSEW)
-    frm_panel.rowconfigure(2, weight=1)
+    frm_panel = Frame(window, bg=CONFIG["bg"]["main"], relief=RAISED, bd=2, width=150)
+    frm_panel.grid(row=0, column=0, sticky=NSEW)
+    frm_panel.grid_propagate(False)
+    frm_panel.grid_columnconfigure(0, weight=1)
 
     Label(frm_panel, text="Выберите раздел:",
-          bg=CONFIG["bg"]["main"]).grid(padx=5, pady=(25, 5))
+          bg=CONFIG["bg"]["main"]).grid(column=0, row=0, padx=5, pady=(25, 5), sticky=EW)
     frm_menu_buttons = Frame(frm_panel, bg=CONFIG["bg"]["main"])
-    frm_menu_buttons.grid(row=1, padx=10)
+    frm_menu_buttons.grid(row=1, padx=10, sticky=EW)
+    frm_menu_buttons.grid_columnconfigure(0, weight=1)
 
     menu_btns = []
 
@@ -146,7 +148,7 @@ def left_panel_ui():
         btn_menu = Button(frm_menu_buttons,
                           text=name,
                           highlightbackground=CONFIG["bg"]["main"],
-                          font=font.Font(size=CONFIG["font_size"]["title"]),
+                          font=font.Font(size=CONFIG["font_size"]["text"]),
                           command=lambda slug=slug, name=name: choose_topic(slug, name))
         btn_menu.grid(row=idx, pady=5, sticky=EW)
         menu_btns.append(btn_menu)
@@ -163,10 +165,10 @@ def left_panel_ui():
                       bg=CONFIG["bg"]["main"])
     lbl_score.place(x=50, y=400)
 
-    make_image(window, "images/sunflower.png", 125, 142, x=18, y=840)
+    make_image(window, "images/sunflower.png", 125, 142, x=12, y=840)
 
 
-frm_main = Frame(bg=CONFIG["bg"]["main"])
+frm_main = Frame(window, bg=CONFIG["bg"]["main"])
 frm_main.grid(column=1, sticky=NSEW)
 frm_main.columnconfigure(0, weight=1)
 lbl_main = Label(frm_main,
@@ -258,7 +260,7 @@ def landing_by_topic(topic_name):
     for i, detail in enumerate(info["details"]):
         Label(frames[topic_name],
               bg=CONFIG["bg"]["main"],
-              wraplength=600,
+              wraplength=700,
               text=detail,
               font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+1, pady=(0, 10))
 
