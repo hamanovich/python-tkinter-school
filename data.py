@@ -6,7 +6,7 @@ menu_buttons = [
     ("cytology", "Цитология", "images/cytology/cytology_logo.png")
 ]
 
-copyrights = "СШ №8, Биология,\n2024"
+copyrights = "СШ №8, 2024"
 
 messages = {
     "task_success_title": "Задание пройдено!",

@@ -433,16 +433,15 @@ def task_1_2():
             result = ""
             for k, entry in enumerate(crossword_answer):
                 result += entry.get()
-                if (entry.get() != task["options"][i]["answer"][k]):
-                    entry.config(bg=CONFIG["bg"]["error"], fg="white")
-                    valid = False
-                else:
-                    entry.config(bg=CONFIG["bg"]["ok"], fg="white")
+                entry.config(bg=CONFIG["bg"]["error"] if entry.get().lower(
+                ) != task["options"][i]["answer"][k].lower() else CONFIG["bg"]["ok"], fg="white")
 
         word = "".join(char.get() for char in keyword)
 
+        print(word, word.lower())
+
         frames[task_name].after(
-            100, lambda: show_message(word == task["answer"]))
+            100, lambda: show_message(word.lower() == task["answer"].lower()))
         active_audio.destroy()
 
     make_check_result_button(frames[task_name], check_task, 20)
