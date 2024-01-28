@@ -63,7 +63,7 @@ def get_page_title(frame, text, columnspan=1):
     Label(frame, anchor=W, wraplength=750,
           bg=CONFIG["bg"]["main"],
           font=font.Font(size=CONFIG["font_size"]["title"]),
-          text=text).grid(row=0, pady=(0, 15), columnspan=columnspan)
+          text=text).grid(row=0, pady=(0, 10), columnspan=columnspan)
 
 
 def clear_frame_content(frame):

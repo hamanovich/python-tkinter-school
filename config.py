@@ -10,7 +10,8 @@ CONFIG = {
     },
     "font_size": {
         "heading": 30,
-        "title": 18,
-        "text": 14
+        "title": 16,
+        "text": 14,
+        "text_small": 12,
     }
 }

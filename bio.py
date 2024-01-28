@@ -179,7 +179,7 @@ lbl_main = Label(frm_main,
                  text=data.project_title,
                  bg=CONFIG["bg"]["main"],
                  font=font.Font(size=CONFIG["font_size"]["heading"]))
-lbl_main.grid(columnspan=3, pady=(20, 20), sticky=EW)
+lbl_main.grid(columnspan=3, pady=10, sticky=EW)
 frm_content = Frame(frm_main, padx=5, pady=5, bg=CONFIG["bg"]["main"])
 frm_content.grid(row=1)
 frm_landing = Frame(frm_content, bg=CONFIG["bg"]["main"])
@@ -386,7 +386,7 @@ def task_1_2():
               wraplength=750,
               bg=CONFIG["bg"]["main"],
               width=75,
-              font=font.Font(size=CONFIG["font_size"]["text"]),
+              font=font.Font(size=CONFIG["font_size"]["text_small"]),
               text=f"{i+1}. {option["question"]}").grid(row=i)
 
     for row, option in enumerate(task["options"]):
@@ -551,7 +551,7 @@ def task_2_1():
                anchor=W,
                relief=SOLID,
                activebackground="white",
-               highlightthickness=0,
+               highlightthickness=1,
                bd=0,
                font=font.Font(size=CONFIG["font_size"]["text"]),
                command=lambda i=idx: btn_click(i)).grid(row=0, column=1, pady=5, sticky=EW)
@@ -635,8 +635,9 @@ def task_2_3():
     get_page_title(frames[task_name], task["name"])
     task_audio(task["audio"])
 
-    container = Frame(frames[task_name], height=300, bd=2, relief=SOLID)
+    container = Frame(frames[task_name], height=475, bd=2, relief=SOLID)
     container.grid(sticky=EW)
+    container.grid_propagate(0)
     frames[task_name].grid_rowconfigure(0, weight=1)
     frames[task_name].grid_columnconfigure(0, weight=1)
     frames[task_name].update_idletasks()
@@ -798,7 +799,7 @@ def task_3_2():
                                      variable=var,
                                      value=choice,
                                      font=font.Font(
-                                         size=CONFIG["font_size"]["text"]),
+                                         size=CONFIG["font_size"]["text_small"]),
                                      bg=CONFIG["bg"]["main"])
             rad_button.grid(row=i+1, column=j+1)
 
