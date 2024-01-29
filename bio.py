@@ -54,7 +54,7 @@ active_audio = None
 
 def task_audio(audio):
     global active_audio
-    player = MusicPlayer(frm_main, audio, autoplay=True)
+    player = MusicPlayer(frm_main, resource_path(audio), autoplay=True)
     player.make_button(x=775, y=10)
     active_audio = player
 
@@ -315,7 +315,7 @@ def landing_result():
 
     make_image(frames["result"], resource_path(result["msg_image_path"]), 600, 600, row=3)
 
-    MusicPlayer(frm_main, result["msg_audio_path"], autoplay=True)
+    MusicPlayer(frm_main, resource_path(result["msg_audio_path"]), autoplay=True)
 
 
 def task_1_1():
