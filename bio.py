@@ -178,7 +178,7 @@ def left_panel_ui():
                       bg=CONFIG["bg"]["main"])
     lbl_score.place(x=50, y=400)
 
-    make_image(window, "images/sunflower.png", 125, 142, x=12, y=740)
+    make_image(window, resource_path("images/sunflower.png"), 125, 142, x=12, y=740)
 
 
 frm_main = Frame(window, bg=CONFIG["bg"]["main"], relief=SOLID, bd=1)
@@ -242,7 +242,7 @@ def landing(frame):
     for idx, (slug, name, frm_img) in enumerate(data.menu_buttons):
         frm = Frame(frame, borderwidth=2, relief=GROOVE, cursor="hand2")
         frm.grid(row=1, column=idx, padx=10, pady=10)
-        image = PhotoImage(file=frm_img)
+        image = PhotoImage(file=resource_path(frm_img))
         lbl_image = Label(frm, image=image)
         lbl_image.image = image
         lbl_image.grid()
@@ -279,7 +279,7 @@ def landing_by_topic(topic_name):
               text=detail,
               font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+1, pady=(0, 10))
 
-    make_image(frames[topic_name], info["preview"]["img_path"],
+    make_image(frames[topic_name], resource_path(info["preview"]["img_path"]),
                info["preview"]["width"], info["preview"]["height"], row=5, bg="white")
     make_link(frames[topic_name], info, 6)
 
@@ -313,7 +313,7 @@ def landing_result():
           text=result["msg_result"],
           font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=2, pady=(0, 20))
 
-    make_image(frames["result"], result["msg_image_path"], 600, 600, row=3)
+    make_image(frames["result"], resource_path(result["msg_image_path"]), 600, 600, row=3)
 
     MusicPlayer(frm_main, result["msg_audio_path"], autoplay=True)
 
@@ -467,13 +467,13 @@ def task_1_3():
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     botanika_photos = [
-        ImageTk.PhotoImage(PilImage.open(img_path))
+        ImageTk.PhotoImage(PilImage.open(resource_path(img_path)))
         for img_path in image_paths
     ]
 
     draggable_texts = [name for (name, _) in task["options"]]
 
-    make_image(frm_wrapper, task["bg"], 650, 650, bg="white")
+    make_image(frm_wrapper, resource_path(task["bg"]), 650, 650, bg="white")
 
     valid_options = []
 
@@ -590,7 +590,7 @@ def task_2_2():
                         bd=0)
     frm_wrapper.grid(row=1)
 
-    make_image(frm_wrapper, task["bg"], 650, 650)
+    make_image(frm_wrapper, resource_path(task["bg"]), 650, 650)
 
     valid_options = []
     draggable_labels = []
@@ -729,11 +729,11 @@ def task_3_1():
     frm_wrapper = Frame(frames[task_name], height=680, width=464, bd=0)
     frm_wrapper.grid(row=1)
 
-    make_image(frm_wrapper, task["bg"], 464, 680, bg="white")
+    make_image(frm_wrapper, resource_path(task["bg"]), 464, 680, bg="white")
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     cytology_photos = [
-        ImageTk.PhotoImage(PilImage.open(img_path))
+        ImageTk.PhotoImage(PilImage.open(resource_path(img_path)))
         for img_path in image_paths
     ]
 
@@ -852,14 +852,14 @@ def task_3_3():
     frm_tips.grid(column=2, sticky=E)
     frm_tips.grid_remove()
 
-    make_image(frm_wrapper, task["bg"], 414, 508, bg="white")
+    make_image(frm_wrapper, resource_path(task["bg"]), 414, 508, bg="white")
 
     frm_wrapper.grid_columnconfigure(1, weight=1)
     frm_wrapper.grid_columnconfigure(2, weight=1)
 
     image_paths = [opt["img_path"] for (_, opt) in task["options"]]
     cytology_photos = [
-        ImageTk.PhotoImage(PilImage.open(img_path))
+        ImageTk.PhotoImage(PilImage.open(resource_path(img_path)))
         for img_path in image_paths
     ]
 
