@@ -1,9 +1,9 @@
 project_title = "Биология"
 
 menu_buttons = [
-    ("botanika", "Ботаника", "images/botanika/botanika_logo.png"),
-    ("anatomy", "Анатомия", "images/anatomy/anatomy_logo.png"),
-    ("cytology", "Цитология", "images/cytology/cytology_logo.png")
+    ("botanika", "Ботаника", "images/botanika_logo.png"),
+    ("anatomy", "Анатомия", "images/anatomy_logo.png"),
+    ("cytology", "Цитология", "images/cytology_logo.png")
 ]
 
 copyrights = "СШ №8, 2024"
@@ -54,7 +54,7 @@ content = {
         "details": ("Ботаника охватывает широкий круг проблем: закономерности внешнего и внутреннего строения растений, их систематику, развитие в течение геологического времени и родственные связи, особенности прошлого и современного распространения по земной поверхности, взаимоотношения со средой, сложение растительного покрова, возможности и пути хозяйственного использования растений.",
                     "Ботаника пользуется как наблюдением, так и сравнительным, историческим и экспериментальным методами, включающими сбор и составление коллекций, наблюдение в природе и на опытных участках, эксперимент в природе и в условиях специализированных лабораторий, математическую обработку полученной информации."),
         "preview": {
-            "img_path": "images/botanika/botanika_landing.png",
+            "img_path": "images/botanika_landing.png",
             "width": 650,
             "height": 386
         },
@@ -145,27 +145,27 @@ content = {
                 "name": "Создайте цикл растения, располагая картинки в правильной последовательности",
                 "options": [
                     (1, {"x": 20, "y": 135,
-                     "img_path": "images/botanika/botanika_3_3-01.png"}),
+                     "img_path": "images/botanika_3_3-01.png"}),
                     (2, {"x": 200, "y": 20,
-                     "img_path": "images/botanika/botanika_3_3-02.png"}),
+                     "img_path": "images/botanika_3_3-02.png"}),
                     (3, {"x": 320, "y": 5,
-                     "img_path": "images/botanika/botanika_3_3-03.png"}),
+                     "img_path": "images/botanika_3_3-03.png"}),
                     (4, {"x": 460, "y": 75,
-                     "img_path": "images/botanika/botanika_3_3-04.png"}),
+                     "img_path": "images/botanika_3_3-04.png"}),
                     (5, {"x": 485, "y": 150,
-                     "img_path": "images/botanika/botanika_3_3-05.png"}),
+                     "img_path": "images/botanika_3_3-05.png"}),
                     (6, {"x": 535, "y": 290,
-                     "img_path": "images/botanika/botanika_3_3-06.png"}),
+                     "img_path": "images/botanika_3_3-06.png"}),
                     (7, {"x": 500, "y": 430,
-                     "img_path": "images/botanika/botanika_3_3-07.png"}),
+                     "img_path": "images/botanika_3_3-07.png"}),
                     (8, {"x": 355, "y": 445,
-                     "img_path": "images/botanika/botanika_3_3-08.png"}),
+                     "img_path": "images/botanika_3_3-08.png"}),
                     (9, {"x": 125, "y": 440,
-                     "img_path": "images/botanika/botanika_3_3-09.png"}),
+                     "img_path": "images/botanika_3_3-09.png"}),
                     (10, {"x": 40, "y": 310,
-                     "img_path": "images/botanika/botanika_3_3-10.png"}),
+                     "img_path": "images/botanika_3_3-10.png"}),
                 ],
-                "bg": "images/botanika/botanika_3_3-00.png",
+                "bg": "images/botanika_3_3-00.png",
                 "audio": "audio/task_1_3.mp3"
             }
         ]},
@@ -175,7 +175,7 @@ content = {
         "details": ("Анатомия как наука изучает не только внешнее строение организма в целом, но и внутреннюю форму и структуру органов, входящих в его состав.",
                     "Анатомия человека — одна из фундаментальных дисциплин в системе медицинского и биологического образования, тесно связанная с такими отделившимися от неё дисциплинами, как антропология и физиология человека, а также сравнительной анатомией, эволюционным учением и генетикой."),
         "preview": {
-            "img_path": "images/anatomy/anatomy_landing.png",
+            "img_path": "images/anatomy_landing.png",
             "width": 650,
             "height": 484
         },
@@ -211,7 +211,7 @@ content = {
                     ("склера", {"x": 465, "y": 100}),
                     ("сетчатка", {"x": 470, "y": 145}),
                 ],
-                "bg": "images/anatomy/eye.png",
+                "bg": "images/eye.png",
                 "meta": {
                     "link_text": "Узнать больше на Youtube.com",
                     "link": "https://youtu.be/rSVDJyqHXQk?si=3pPhfFCKeMs-yn3R"
@@ -260,7 +260,7 @@ content = {
         "intro": "Цитоло́гия — раздел биологии, изучающий живые клетки, их органеллы, их строение, функционирование, процессы деления, старения и смерти.",
         "details": ("Термин «клетка» впервые использовал Роберт Гук в 1665 году, при описании своих «исследований строения пробки с помощью увеличительных линз». В 1674 году Антони ван Левенгук первым обнаружил клеточные ядра.",),
         "preview": {
-            "img_path": "images/cytology/cytology_landing.png",
+            "img_path": "images/cytology_landing.png",
             "width": 650,
             "height": 571
         },
@@ -274,26 +274,26 @@ content = {
                 "name": "Создайте растительную клетку. Перетащите только нужные органоиды",
                 "options": [
                     ("аппарат гольджи", {
-                     "required": True, "img_path": "images/cytology/аппарат_гольджи.png"}),
+                     "required": True, "img_path": "images/аппарат_гольджи.png"}),
                     ("вакуоль", {"required": True,
-                     "img_path": "images/cytology/вакуоль.png"}),
+                     "img_path": "images/вакуоль.png"}),
                     ("жгутик", {"required": False,
-                     "img_path": "images/cytology/жгутик.png"}),
+                     "img_path": "images/жгутик.png"}),
                     ("ядро", {"required": True,
-                     "img_path": "images/cytology/ядро.png"}),
+                     "img_path": "images/ядро.png"}),
                     ("кольцевая днк", {"required": False,
-                     "img_path": "images/cytology/кольцевая_днк.png"}),
+                     "img_path": "images/кольцевая_днк.png"}),
                     ("лизосома", {"required": True,
-                     "img_path": "images/cytology/лизосома.png"}),
+                     "img_path": "images/лизосома.png"}),
                     ("митохондрия", {"required": True,
-                     "img_path": "images/cytology/митохондрия.png"}),
+                     "img_path": "images/митохондрия.png"}),
                     ("хлоропласт", {"required": True,
-                     "img_path": "images/cytology/хлоропласт.png"}),
+                     "img_path": "images/хлоропласт.png"}),
                     ("центриоль", {"required": False,
-                     "img_path": "images/cytology/центриоль.png"}),
+                     "img_path": "images/центриоль.png"}),
                 ],
                 "answers": [15, 350, 30, 380],
-                "bg": "images/cytology/клетка.png",
+                "bg": "images/клетка.png",
                 "audio": "audio/task_3_1.mp3"
             },
             {
@@ -314,19 +314,19 @@ content = {
                 "name": "Соберите слои эпидермиса в правильной последовательности",
                 "options": [
                     ("дерма", {
-                     "x": 0, "y": 415, "hint_y": 450, "img_path": "images/cytology/cytology_3_3_01.jpg"}),
+                     "x": 0, "y": 415, "hint_y": 450, "img_path": "images/cytology_3_3_01.png"}),
                     ("базальный", {
-                     "x": 0, "y": 356, "hint_y": 375, "img_path": "images/cytology/cytology_3_3_02.jpg"}),
+                     "x": 0, "y": 356, "hint_y": 375, "img_path": "images/cytology_3_3_02.png"}),
                     ("шиповатый", {
-                     "x": 0, "y": 285, "hint_y": 300, "img_path": "images/cytology/cytology_3_3_03.jpg"}),
+                     "x": 0, "y": 285, "hint_y": 300, "img_path": "images/cytology_3_3_03.png"}),
                     ("зернистый", {
-                     "x": 0, "y": 164, "hint_y": 210, "img_path": "images/cytology/cytology_3_3_04.jpg"}),
+                     "x": 0, "y": 164, "hint_y": 210, "img_path": "images/cytology_3_3_04.png"}),
                     ("блестящий", {
-                     "x": 0, "y": 94, "hint_y": 120, "img_path": "images/cytology/cytology_3_3_05.jpg"}),
+                     "x": 0, "y": 94, "hint_y": 120, "img_path": "images/cytology_3_3_05.png"}),
                     ("роговой", {
-                     "x": 0, "y": 0, "hint_y": 35, "img_path": "images/cytology/cytology_3_3_06.jpg"}),
+                     "x": 0, "y": 0, "hint_y": 35, "img_path": "images/cytology_3_3_06.png"}),
                 ],
-                "bg": "images/cytology/cytology_3_3_00.jpg",
+                "bg": "images/cytology_3_3_00.png",
                 "audio": "audio/task_3_3.mp3"
             }
         ]
