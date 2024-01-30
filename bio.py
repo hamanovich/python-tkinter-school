@@ -41,9 +41,9 @@ window.option_add("*Button.background", "white")
 window.option_add("*Button.foreground", "black")
 window.option_add("*Radiobutton.foreground", "black")
 
-frame_ids = ["botanika", "anatomy", "cytology", "task_1_1", "task_1_2", "task_1_3",
+frame_ids = ["intro", "botanika", "anatomy", "cytology", "task_1_1", "task_1_2", "task_1_3",
              "task_2_1", "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "result"]
-tasks = ["task_1_1", "task_1_2", "task_1_3", "task_2_1",
+tasks = ["intro", "task_1_1", "task_1_2", "task_1_3", "task_2_1",
          "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "landing_result"]
 
 total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
@@ -176,9 +176,10 @@ def left_panel_ui():
     lbl_score = Label(window, text="",
                       font=font.Font(size=CONFIG["font_size"]["heading"]),
                       bg=CONFIG["bg"]["main"])
-    lbl_score.place(x=50, y=400)
+    lbl_score.place(x=50, y=360)
 
-    make_image(window, resource_path("images/sunflower.png"), 125, 142, x=12, y=740)
+    make_image(window, resource_path(
+        "images/sunflower.png"), 125, 142, x=12, y=740)
 
 
 frm_main = Frame(window, bg=CONFIG["bg"]["main"], relief=SOLID, bd=1)
@@ -269,7 +270,7 @@ def landing_by_topic(topic_name):
     info = data.content[topic_name]
     frames[topic_name].grid()
 
-    get_page_title(frames[topic_name], info["intro"])
+    get_page_title(frames[topic_name], info["title"])
     task_audio(info["audio"])
 
     for i, detail in enumerate(info["details"]):
@@ -313,9 +314,31 @@ def landing_result():
           text=result["msg_result"],
           font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=2, pady=(0, 20))
 
-    make_image(frames["result"], resource_path(result["msg_image_path"]), 600, 600, row=3)
+    make_image(frames["result"], resource_path(
+        result["msg_image_path"]), 600, 600, row=3)
 
-    MusicPlayer(frm_main, resource_path(result["msg_audio_path"]), autoplay=True)
+    MusicPlayer(frm_main, resource_path(
+        result["msg_audio_path"]), autoplay=True)
+
+
+def intro():
+    info = data.intro
+    frm = frames["intro"]
+    frm.grid()
+
+    get_page_title(frm, info["title"])
+
+    make_image(frm, resource_path(info["image_path"]), 500, 333, row=1)
+
+    for i, rule in enumerate(info["rules"]):
+        Label(frames["intro"],
+              bg=CONFIG["bg"]["main"],
+              anchor=W,
+              wraplength=700,
+              text=rule,
+              font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+2, pady=5)
+
+    make_check_result_button(frm, next_task, 10, text="Поехали!")
 
 
 def task_1_1():
@@ -323,9 +346,10 @@ def task_1_1():
     row_entries = []
     task = data.content["botanika"]["tasks"][0]
     lbl_main.config(text=data.menu_buttons[0][1])
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
     frm_options = make_frame(task_name, 1)
@@ -360,11 +384,10 @@ def task_1_1():
             variant.config(bg=CONFIG["bg"]["ok"] if variant.get(
             ) == task["answer"][i] else CONFIG["bg"]["error"], fg="white")
 
-        frames[task_name].after(
-            100, lambda: show_message(result == task["answer"]))
+        frm.after(100, lambda: show_message(result == task["answer"]))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 4)
+    make_check_result_button(frm, check_task, 4)
 
 
 def task_1_2():
@@ -376,9 +399,10 @@ def task_1_2():
     KEYWORD_COLUMN = 8
     task = data.content["botanika"]["tasks"][1]
     lbl_main.config(text=data.menu_buttons[0][1])
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
     frm_options = make_frame(task_name, 1)
@@ -440,11 +464,11 @@ def task_1_2():
 
         print(word, word.lower())
 
-        frames[task_name].after(
-            100, lambda: show_message(word.lower() == task["answer"].lower()))
+        frm.after(100, lambda: show_message(
+            word.lower() == task["answer"].lower()))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 20)
+    make_check_result_button(frm, check_task, 20)
 
 
 def task_1_3():
@@ -454,12 +478,13 @@ def task_1_3():
     task_name = func_name()
     lbl_main.config(text=data.menu_buttons[0][1])
     task = data.content["botanika"]["tasks"][2]
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
-    frm_wrapper = Frame(frames[task_name],
+    frm_wrapper = Frame(frm,
                         height=650,
                         width=650,
                         bd=0)
@@ -507,11 +532,11 @@ def task_1_3():
             el.config(bg=CONFIG["bg"]["ok"] if el.cget(
                 "text") in valid_options else CONFIG["bg"]["error"])
 
-        frames[task_name].after(
-            100, lambda: show_message(len(valid_options) == len(task["options"])))
+        frm.after(100, lambda: show_message(
+            len(valid_options) == len(task["options"])))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 20)
+    make_check_result_button(frm, check_task, 20)
 
 
 def task_2_1():
@@ -520,12 +545,13 @@ def task_2_1():
     task_name = func_name()
     lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][0]
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
-    entry_answer = Entry(frames[task_name], font=font.Font(
+    entry_answer = Entry(frm, font=font.Font(
         size=CONFIG["font_size"]["title"]))
     entry_answer.grid(row=1, pady=10, sticky=EW)
     entry_answer.focus_set()
@@ -538,7 +564,7 @@ def task_2_1():
         entry_answer.insert(0, updated_text)
 
     for (idx, option) in task["options"]:
-        row_frame = Frame(frames[task_name], bg=CONFIG["bg"]["main"])
+        row_frame = Frame(frm, bg=CONFIG["bg"]["main"])
         row_frame.grid(row=idx+1, sticky=EW)
         row_frame.columnconfigure(1, weight=1)
 
@@ -567,10 +593,10 @@ def task_2_1():
         entry_answer.config(
             bg=CONFIG["bg"]["ok"] if is_ok else CONFIG["bg"]["error"], fg="white")
 
-        frames[task_name].after(100, lambda: show_message(is_ok))
+        frm.after(100, lambda: show_message(is_ok))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 10)
+    make_check_result_button(frm, check_task, 10)
 
 
 def task_2_2():
@@ -579,12 +605,13 @@ def task_2_2():
 
     lbl_main.config(text=data.menu_buttons[1][1])
     task = data.content["anatomy"]["tasks"][1]
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
-    frm_wrapper = Frame(frames[task_name],
+    frm_wrapper = Frame(frm,
                         height=650,
                         width=650,
                         bd=0)
@@ -619,12 +646,12 @@ def task_2_2():
             el.config(bg=CONFIG["bg"]["ok"] if el.cget(
                 "text") in valid_element_names else CONFIG["bg"]["error"])
 
-        frames[task_name].after(
-            100, lambda: show_message(len(valid_options) == len(task["options"])))
+        frm.after(100, lambda: show_message(
+            len(valid_options) == len(task["options"])))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 2)
-    make_link(frames[task_name], task, 3)
+    make_check_result_button(frm, check_task, 2)
+    make_link(frm, task, 3)
 
 
 def task_2_3():
@@ -632,19 +659,20 @@ def task_2_3():
     task_name = func_name()
 
     lbl_main.config(text=data.menu_buttons[1][1])
-    frames[task_name].grid()
     task = data.content["anatomy"]["tasks"][2]
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
-    container = Frame(frames[task_name], width=650,
+    container = Frame(frm, width=650,
                       height=475, bd=1, relief=SOLID)
     container.grid(sticky=EW)
     container.grid_propagate(False)
-    frames[task_name].grid_rowconfigure(0, weight=1)
-    frames[task_name].grid_columnconfigure(0, weight=1)
-    frames[task_name].update_idletasks()
+    frm.grid_rowconfigure(0, weight=1)
+    frm.grid_columnconfigure(0, weight=1)
+    frm.update_idletasks()
 
     frame_1 = Frame(container, bd=1, highlightthickness=5,
                     highlightbackground="white", relief=SOLID, height=250)
@@ -705,12 +733,12 @@ def task_2_3():
             el.config(bg=CONFIG["bg"]["ok"] if el.cget(
                 "text") in valid_element_names else CONFIG["bg"]["error"])
 
-        frames[task_name].after(
-            100, lambda: show_message(len(valid_options) == len(task["options"])))
+        frm.after(100, lambda: show_message(
+            len(valid_options) == len(task["options"])))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 3)
-    make_link(frames[task_name], task, 4)
+    make_check_result_button(frm, check_task, 3)
+    make_link(frm, task, 4)
 
 
 def task_3_1():
@@ -720,13 +748,13 @@ def task_3_1():
 
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][0]
+    frm = frames[task_name]
+    frm.grid()
 
-    frames[task_name].grid()
-
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
-    frm_wrapper = Frame(frames[task_name], height=680, width=464, bd=0)
+    frm_wrapper = Frame(frm, height=680, width=464, bd=0)
     frm_wrapper.grid(row=1)
 
     make_image(frm_wrapper, resource_path(task["bg"]), 464, 680, bg="white")
@@ -774,11 +802,11 @@ def task_3_1():
             el.config(bg=CONFIG["bg"]["ok"] if el.cget(
                 "text") in valid_options else CONFIG["bg"]["error"])
 
-        frames[task_name].after(
-            100, lambda: show_message(len(valid_options) == len(task["options"])))
+        frm.after(100, lambda: show_message(
+            len(valid_options) == len(task["options"])))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 2)
+    make_check_result_button(frm, check_task, 2)
 
 
 def task_3_2():
@@ -787,9 +815,10 @@ def task_3_2():
 
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][1]
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"], columnspan=4)
+    get_page_title(frm, task["name"], columnspan=4)
     task_audio(task["audio"])
 
     choice_values = list(set(value for _, value in task["options"]))
@@ -797,14 +826,14 @@ def task_3_2():
 
     for i, (name, answer) in enumerate(task["options"]):
         var = StringVar(value="")
-        label = Label(frames[task_name],
+        label = Label(frm,
                       text=name,
                       font=font.Font(size=CONFIG["font_size"]["text"]),
                       bg=CONFIG["bg"]["main"])
         label.grid(row=i+1, sticky=E)
 
         for j, choice in enumerate(choice_values):
-            rad_button = Radiobutton(frames[task_name],
+            rad_button = Radiobutton(frm,
                                      text=choice,
                                      variable=var,
                                      value=choice,
@@ -824,12 +853,11 @@ def task_3_2():
             else:
                 label.config(bg=CONFIG["bg"]["error"], fg="white")
 
-        frames[task_name].after(
-            100, lambda: show_message(correct_answers == len(task["options"])))
+        frm.after(100, lambda: show_message(
+            correct_answers == len(task["options"])))
         active_audio.destroy()
 
-    make_check_result_button(
-        frames[task_name], check_task, i+2, pady=50, columnspan=4)
+    make_check_result_button(frm, check_task, i+2, pady=50, columnspan=4)
 
 
 def task_3_3():
@@ -839,12 +867,13 @@ def task_3_3():
 
     lbl_main.config(text=data.menu_buttons[2][1])
     task = data.content["cytology"]["tasks"][2]
-    frames[task_name].grid()
+    frm = frames[task_name]
+    frm.grid()
 
-    get_page_title(frames[task_name], task["name"])
+    get_page_title(frm, task["name"])
     task_audio(task["audio"])
 
-    frm_wrapper = Frame(frames[task_name], height=508, width=700, bd=0)
+    frm_wrapper = Frame(frm, height=508, width=700, bd=0)
     frm_wrapper.grid(row=1)
     frm_wrapper.grid_propagate(0)
 
@@ -903,18 +932,18 @@ def task_3_3():
                 "text") in valid_options else CONFIG["bg"]["error"])
             el.place(x=x-border_width, y=y-border_width)
 
-        frames[task_name].after(
-            100, lambda: show_message(len(valid_options) == len(task["options"])))
+        frm.after(100, lambda: show_message(
+            len(valid_options) == len(task["options"])))
         active_audio.destroy()
 
-    make_check_result_button(frames[task_name], check_task, 3)
+    make_check_result_button(frm, check_task, 3)
 
     def show_tips():
         frm_tips.grid()
         btn_tip.grid_remove()
         frm_tips.after(5000, frm_tips.grid_remove)
 
-    btn_tip = Button(frames[task_name],
+    btn_tip = Button(frm,
                      text="Показать подсказку на 5 секунд",
                      highlightbackground=CONFIG["bg"]["main"],
                      command=show_tips)

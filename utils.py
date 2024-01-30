@@ -81,11 +81,11 @@ def make_frame(frame_id, row, pady=0):
     return frame
 
 
-def make_check_result_button(frame_id, command, row, pady=10, columnspan=1):
+def make_check_result_button(frame_id, command, row, pady=10, columnspan=1, text="Проверить результат"):
     frame_id.bind_all('<Return>', lambda _: command())
     Button(
         frame_id,
-        text="Проверить результат",
+        text=text,
         font=font.Font(size=CONFIG["font_size"]["title"]),
         highlightthickness=0,
         relief=SOLID,
