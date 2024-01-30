@@ -336,7 +336,7 @@ def intro():
               anchor=W,
               wraplength=700,
               text=rule,
-              font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+2, pady=5)
+              font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+2, pady=(0, 5))
 
     make_check_result_button(frm, next_task, 10, text="Поехали!")
 
