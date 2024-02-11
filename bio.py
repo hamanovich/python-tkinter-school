@@ -1,58 +1,24 @@
 import data
-import sys
-import os
 
-from random import randint
 from tkinter import *
 from tkinter import font, messagebox
 from PIL import Image as PilImage, ImageTk
-from music_player import MusicPlayer
-
-from config import CONFIG
+from random import randint, shuffle
+from config import *
 from utils import *
+from music_player import MusicPlayer
 from draggable import DraggableWidget
 
 
-def resource_path(relative_path):
-    """ Get absolute path to resource, works for dev and for PyInstaller """
-    base_path = getattr(sys, '_MEIPASS', os.path.dirname(
-        os.path.abspath(__file__)))
-    return os.path.join(base_path, relative_path)
+window = set_global_options(data.project_title)
 
-
-window = Tk()
-window.geometry(f"{CONFIG["window"]["width"]}x{
-                CONFIG["window"]["height"]}+{(window.winfo_screenwidth() - CONFIG["window"]["width"]) // 2}+{(window.winfo_screenheight() - CONFIG["window"]["height"]) // 2}")
-window.resizable(0, 0)
-window.title(data.project_title)
-window.rowconfigure(0, minsize=CONFIG["window"]["width"], weight=1)
-window.columnconfigure(1, minsize=CONFIG["window"]["height"]-200, weight=1)
-
-window.option_add("*Label.background", "white")
-window.option_add("*Label.foreground", "black")
-window.option_add("*Entry.background", "white")
-window.option_add("*Entry.foreground", "black")
-window.option_add("*Entry.highlightBackground", "white")
-window.option_add("*Entry.highlightThickness", 1)
-window.option_add("*Canvas.background", "white")
-window.option_add("*Frame.background", "white")
-window.option_add("*Button.cursor", "hand2")
-window.option_add("*Button.background", "white")
-window.option_add("*Button.foreground", "black")
-window.option_add("*Radiobutton.foreground", "black")
-
-frame_ids = ["intro", "botanika", "anatomy", "cytology", "task_1_1", "task_1_2", "task_1_3",
-             "task_2_1", "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "result"]
-tasks = ["intro", "task_1_1", "task_1_2", "task_1_3", "task_2_1",
-         "task_2_2", "task_2_3", "task_3_1", "task_3_2", "task_3_3", "landing_result"]
-
-total_tasks = sum(len(cat["tasks"]) for cat in data.content.values())
+total_tasks = 0
 active_task_number = 0
 score = 0
 active_audio = None
 
 
-def task_audio(audio):
+def make_audio(audio):
     global active_audio
     player = MusicPlayer(frm_main, resource_path(audio), autoplay=True)
     player.make_button(x=775, y=10)
@@ -101,15 +67,17 @@ def choose_topic(slug, name):
 def reset_score():
     global score
     global active_task_number
+    global total_tasks
 
     score = 0
-    active_task_number = 8
+    active_task_number = 0
     lbl_score.config(text=f"{score}/{total_tasks}")
     lbl_score_caveat.config(text=data.messages["game_score_caveat"])
 
 
 def increase_score():
     global score
+    global total_tasks
 
     score += 1
     lbl_score.config(text=f"{score}/{total_tasks}")
@@ -121,7 +89,7 @@ def go_home():
     global active_audio
 
     frm_landing.grid()
-    for frame_id in frame_ids:
+    for frame_id in FRAME_IDS:
         clear_frame_content(frames[frame_id])
     clear_frame_content(btn_home)
 
@@ -215,7 +183,7 @@ frm_content.grid(row=1)
 frm_landing = Frame(frm_content, bg=CONFIG["bg"]["main"])
 frm_landing.grid()
 
-for frame_id in frame_ids:
+for frame_id in FRAME_IDS:
     frame = Frame(frm_content, bg=CONFIG["bg"]["main"])
     frame.grid()
     frames[frame_id] = frame
@@ -223,19 +191,39 @@ for frame_id in frame_ids:
 
 def clear_content():
     frm_landing.grid_remove()
-    for frame_id in frame_ids:
+    for frame_id in FRAME_IDS:
         clear_frame_content(frames[frame_id])
 
 
-def start_game():
+def start_game(cat="all"):
+    global tasks
+    global total_tasks
+    global category
+
     clear_content()
     reset_score()
     make_home_btn()
+
+    category = cat
+
+    match cat:
+        case "botanika":
+            tasks = TASKS_BOTANIKA
+        case "anatomy":
+            tasks = TASKS_ANATOMY
+        case "cytology":
+            tasks = TASKS_CYTOLOGY
+        case _:
+            tasks = TASKS_ALL
+
+    total_tasks = len(tasks) - 2
+    lbl_score.config(text=f"{score}/{total_tasks}")
     globals()[tasks[active_task_number]]()
 
 
 def next_task():
     global active_task_number
+    global tasks
 
     active_task_number += 1
     clear_content()
@@ -256,7 +244,8 @@ def show_message(success):
 
 def landing(frame):
     Label(frame,
-          text=f"Выберите раздел или нажмите \"{data.messages["play_button"]}\"",
+          text=f"Выберите раздел или нажмите \"{
+              data.messages["play_button"]}\"",
           font=font.Font(size=CONFIG["font_size"]["title"]),
           bg=CONFIG["bg"]["main"]).grid(pady=(0, 10), columnspan=4)
 
@@ -268,7 +257,7 @@ def landing(frame):
         lbl_image.image = image
         lbl_image.grid()
         lbl_image.bind("<Button-1>", lambda _, slug=slug,
-                       name=name: choose_topic(slug, name))
+                       name=name: start_game(slug))
         Label(frm, text=name, font=font.Font(
             size=CONFIG["font_size"]["text_small"])).grid(row=1)
 
@@ -291,7 +280,7 @@ def landing_by_topic(topic_name):
     frames[topic_name].grid()
 
     make_label(frames[topic_name], info["title"])
-    task_audio(info["audio"])
+    make_audio(info["audio"])
 
     for i, detail in enumerate(info["details"]):
         Label(frames[topic_name],
@@ -309,7 +298,7 @@ def landing_result():
     result = None
 
     frames["result"].grid()
-    lbl_main.config(text="Игра завершена!")
+    lbl_main.config(text=data.messages["game_over"])
 
     Label(frames["result"],
           bg=CONFIG["bg"]["main"],
@@ -317,16 +306,29 @@ def landing_result():
           text=f"Ваш результат: {score}/{total_tasks}",
           font=font.Font(size=CONFIG["font_size"]["title"])).grid(row=1)
 
-    if (score <= 4):
-        result = data.results["bad"]
-    if (score > 4 and score < 7):
-        result = data.results["ok"]
-    if (score >= 7):
-        result = data.results["great"]
-    if (score == 9):
-        result = data.results["awesome"]
-    if (score == 0):
-        result = data.results["awfull"]
+    match total_tasks:
+        case 3:
+            match score:
+                case 0:
+                    result = data.results["awfull"]
+                case 1:
+                    result = data.results["bad"]
+                case 2:
+                    result = data.results["great"]
+                case 3:
+                    result = data.results["awesome"]
+        case _:
+            match score:
+                case 0:
+                    result = data.results["awfull"]
+                case 1 | 2 | 3:
+                    result = data.results["bad"]
+                case 4 | 5 | 6:
+                    result = data.results["ok"]
+                case 7 | 8:
+                    result = data.results["great"]
+                case 9:
+                    result = data.results["awesome"]
 
     Label(frames["result"],
           bg=CONFIG["bg"]["main"],
@@ -346,8 +348,10 @@ def intro():
     frm = frames["intro"]
     frm.grid()
 
-    make_label(frm, info["title"])
+    lbl_main.config(text=get_menu_item_name(category))
+
     make_image(frm, resource_path(info["image_path"]), 500, 333, row=1)
+    make_audio(info["audio"])
 
     for i, rule in enumerate(info["rules"]):
         Label(frames["intro"],
@@ -371,7 +375,7 @@ def task_1_1():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     frm_options = make_frame(task_name, 2)
     frm_task = make_frame(task_name, 3)
@@ -426,7 +430,7 @@ def task_1_2():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     frm_options = make_frame(task_name, 2)
     frm_crossword = make_frame(task_name, 3, 20)
@@ -485,8 +489,6 @@ def task_1_2():
 
         word = "".join(char.get() for char in keyword)
 
-        print(word, word.lower())
-
         frm.after(100, lambda: show_message(
             word.lower() == task["answer"].lower()))
         active_audio.destroy()
@@ -507,7 +509,7 @@ def task_1_3():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     frm_wrapper = Frame(frm,
                         height=650,
@@ -575,7 +577,7 @@ def task_2_1():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     entry_answer = Entry(frm, font=font.Font(
         size=CONFIG["font_size"]["heading"]))
@@ -640,7 +642,7 @@ def task_2_2():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     frm_wrapper = Frame(frm,
                         height=650,
@@ -697,7 +699,7 @@ def task_2_3():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     container = Frame(frm, width=650,
                       height=475, bd=1, relief=SOLID)
@@ -787,7 +789,7 @@ def task_3_1():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     frm_wrapper = Frame(frm, height=680, width=464, bd=0)
     frm_wrapper.grid(row=2)
@@ -856,10 +858,11 @@ def task_3_2():
     make_label(frm, task["name"], columnspan=4)
     make_label(frm, task["rule"], row=1, columnspan=4,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     choice_values = list(set(value for _, value in task["options"]))
     task_options = []
+    shuffle(task["options"])
 
     for i, (name, answer) in enumerate(task["options"]):
         var = StringVar(value="")
@@ -867,7 +870,7 @@ def task_3_2():
                       text=name,
                       font=font.Font(size=CONFIG["font_size"]["text"]),
                       bg=CONFIG["bg"]["main"])
-        label.grid(row=i+3, sticky=E)
+        label.grid(row=i+2, sticky=E)
 
         for j, choice in enumerate(choice_values):
             rad_button = Radiobutton(frm,
@@ -877,7 +880,7 @@ def task_3_2():
                                      font=font.Font(
                                          size=CONFIG["font_size"]["text_small"]),
                                      bg=CONFIG["bg"]["main"])
-            rad_button.grid(row=i+3, column=j+1)
+            rad_button.grid(row=i+2, column=j+1)
 
         task_options.append((name, answer, var, label))
 
@@ -910,7 +913,7 @@ def task_3_3():
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
                font_size=CONFIG["font_size"]["text_small"])
-    task_audio(task["audio"])
+    make_audio(task["audio"])
 
     frm_wrapper = Frame(frm, height=508, width=700, bd=0)
     frm_wrapper.grid(row=2)

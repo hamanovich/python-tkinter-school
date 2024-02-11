@@ -1,10 +1,19 @@
 import webbrowser
 import sys
+import os
+import data
 
 from config import CONFIG
 from tkinter import *
 from tkinter import font
 from PIL import Image as PilImage, ImageTk
+
+
+def resource_path(relative_path):
+    """ Get absolute path to resource, works for dev and for PyInstaller """
+    base_path = getattr(sys, '_MEIPASS', os.path.dirname(
+        os.path.abspath(__file__)))
+    return os.path.join(base_path, relative_path)
 
 
 def func_name():
@@ -38,6 +47,13 @@ def get_value(key, options):
     for element, category in options:
         if element == key:
             return category
+
+
+def get_menu_item_name(section):
+    for item in data.menu_buttons:
+        if item[0] == section:
+            return item[1]
+    return data.menu_buttons[0][1]
 
 
 global_images = []
