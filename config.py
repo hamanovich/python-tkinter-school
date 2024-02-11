@@ -1,7 +1,7 @@
 CONFIG = {
     "window": {
         "width": 1000,
-        "height": 900
+        "height": 925
     },
     "bg": {
         "main": "lightgreen",

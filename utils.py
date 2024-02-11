@@ -6,7 +6,8 @@ from tkinter import *
 from tkinter import font
 from PIL import Image as PilImage, ImageTk
 
-def func_name(): 
+
+def func_name():
     return sys._getframe(1).f_code.co_name
 
 
@@ -59,11 +60,16 @@ def make_image(frame, img_path, width, height, **kwargs):
         img_canvas.grid(row=kwargs.get("row", 0))
 
 
-def get_page_title(frame, text, columnspan=1):
-    Label(frame, anchor=W, wraplength=750,
+def make_label(frame, text, **kwargs):
+    Label(frame,
+          anchor=W,
+          wraplength=kwargs.get("wraplength", 750),
           bg=CONFIG["bg"]["main"],
-          font=font.Font(size=CONFIG["font_size"]["title"]),
-          text=text).grid(row=0, pady=(0, 10), columnspan=columnspan)
+          font=font.Font(size=kwargs.get(
+              "font_size", CONFIG["font_size"]["title"])),
+          text=text).grid(row=kwargs.get("row", 0),
+                          pady=(0, 10),
+                          columnspan=kwargs.get("columnspan", 1))
 
 
 def clear_frame_content(frame):
