@@ -13,8 +13,9 @@ CONFIG = {
     "font_size": {
         "heading": 30,
         "title": 16,
-        "text": 14,
-        "text_small": 12,
+        "md": 14,
+        "sm": 12,
+        "x_sm": 10
     }
 }
 

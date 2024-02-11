@@ -125,7 +125,7 @@ def left_panel_ui():
     frm_score = Frame(window,
                       bg=CONFIG["bg"]["main"],
                       width=140,
-                      height=140)
+                      height=200)
     frm_score.place(x=5, y=350)
 
     Label(frm_panel, text="Выберите раздел:",
@@ -140,7 +140,7 @@ def left_panel_ui():
         btn_menu = Button(frm_menu_buttons,
                           text=name,
                           highlightbackground=CONFIG["bg"]["main"],
-                          font=font.Font(size=CONFIG["font_size"]["text"]),
+                          font=font.Font(size=CONFIG["font_size"]["md"]),
                           command=lambda slug=slug, name=name: choose_topic(slug, name))
         btn_menu.grid(row=idx, pady=5, sticky=EW)
         menu_btns.append(btn_menu)
@@ -161,7 +161,7 @@ def left_panel_ui():
                              text="",
                              wraplength=120,
                              font=font.Font(
-                                 size=CONFIG["font_size"]["text_small"]),
+                                 size=CONFIG["font_size"]["x_sm"]),
                              justify=LEFT,
                              bg=CONFIG["bg"]["main"])
     lbl_score_caveat.place(x=10, y=45)
@@ -259,7 +259,7 @@ def landing(frame):
         lbl_image.bind("<Button-1>", lambda _, slug=slug,
                        name=name: start_game(slug))
         Label(frm, text=name, font=font.Font(
-            size=CONFIG["font_size"]["text_small"])).grid(row=1)
+            size=CONFIG["font_size"]["sm"])).grid(row=1)
 
     lbl_start = Label(frame,
                       text=data.messages["play_button"],
@@ -287,7 +287,7 @@ def landing_by_topic(topic_name):
               bg=CONFIG["bg"]["main"],
               wraplength=700,
               text=detail,
-              font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+1, pady=(0, 10))
+              font=font.Font(size=CONFIG["font_size"]["md"])).grid(row=i+1, pady=(0, 10))
 
     make_image(frames[topic_name], resource_path(info["preview"]["img_path"]),
                info["preview"]["width"], info["preview"]["height"], row=5, bg="white")
@@ -359,7 +359,7 @@ def intro():
               anchor=W,
               wraplength=700,
               text=rule,
-              font=font.Font(size=CONFIG["font_size"]["text"])).grid(row=i+2, pady=(0, 5))
+              font=font.Font(size=CONFIG["font_size"]["md"])).grid(row=i+2, pady=(0, 5))
 
     make_check_result_button(frm, next_task, 10, text="Поехали!")
 
@@ -374,7 +374,7 @@ def task_1_1():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     frm_options = make_frame(task_name, 2)
@@ -385,7 +385,7 @@ def task_1_1():
               anchor=W,
               wraplength=750,
               bg=CONFIG["bg"]["main"],
-              font=font.Font(size=CONFIG["font_size"]["text"]),
+              font=font.Font(size=CONFIG["font_size"]["md"]),
               text=f"{option[0]}. {option[1]}").grid(row=i)
 
     for i in range(len(task["answer"])):
@@ -429,7 +429,7 @@ def task_1_2():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     frm_options = make_frame(task_name, 2)
@@ -441,7 +441,7 @@ def task_1_2():
               wraplength=750,
               bg=CONFIG["bg"]["main"],
               width=75,
-              font=font.Font(size=CONFIG["font_size"]["text_small"]),
+              font=font.Font(size=CONFIG["font_size"]["sm"]),
               text=f"{i+1}. {option["question"]}").grid(row=i)
 
     for row, option in enumerate(task["options"]):
@@ -508,7 +508,7 @@ def task_1_3():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     frm_wrapper = Frame(frm,
@@ -576,7 +576,7 @@ def task_2_1():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     entry_answer = Entry(frm, font=font.Font(
@@ -602,18 +602,18 @@ def task_2_1():
         Label(row_frame,
               text=f"{idx}.",
               width=2,
-              borderwidth=1,
+              borderwidth=0,
               relief=SOLID,
-              font=font.Font(size=CONFIG["font_size"]["text"])).grid(sticky=NSEW, pady=5)
+              font=font.Font(size=CONFIG["font_size"]["md"])).grid(sticky=NSEW, pady=5)
 
         Button(row_frame,
                text=f" {option}",
                anchor=W,
                relief=SOLID,
                activebackground="white",
-               highlightthickness=1,
+               highlightthickness=0,
                bd=0,
-               font=font.Font(size=CONFIG["font_size"]["text"]),
+               font=font.Font(size=CONFIG["font_size"]["md"]),
                command=lambda i=idx: btn_click(i)).grid(row=0, column=1, pady=5, sticky=EW)
 
     def check_task():
@@ -641,7 +641,7 @@ def task_2_2():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     frm_wrapper = Frame(frm,
@@ -698,7 +698,7 @@ def task_2_3():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     container = Frame(frm, width=650,
@@ -788,7 +788,7 @@ def task_3_1():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     frm_wrapper = Frame(frm, height=680, width=464, bd=0)
@@ -857,7 +857,7 @@ def task_3_2():
 
     make_label(frm, task["name"], columnspan=4)
     make_label(frm, task["rule"], row=1, columnspan=4,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     choice_values = list(set(value for _, value in task["options"]))
@@ -868,7 +868,7 @@ def task_3_2():
         var = StringVar(value="")
         label = Label(frm,
                       text=name,
-                      font=font.Font(size=CONFIG["font_size"]["text"]),
+                      font=font.Font(size=CONFIG["font_size"]["md"]),
                       bg=CONFIG["bg"]["main"])
         label.grid(row=i+2, sticky=E)
 
@@ -878,7 +878,7 @@ def task_3_2():
                                      variable=var,
                                      value=choice,
                                      font=font.Font(
-                                         size=CONFIG["font_size"]["text_small"]),
+                                         size=CONFIG["font_size"]["sm"]),
                                      bg=CONFIG["bg"]["main"])
             rad_button.grid(row=i+2, column=j+1)
 
@@ -912,7 +912,7 @@ def task_3_3():
 
     make_label(frm, task["name"])
     make_label(frm, task["rule"], row=1,
-               font_size=CONFIG["font_size"]["text_small"])
+               font_size=CONFIG["font_size"]["sm"])
     make_audio(task["audio"])
 
     frm_wrapper = Frame(frm, height=508, width=700, bd=0)
